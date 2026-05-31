@@ -187,8 +187,10 @@ async function clickBlobLinkAndAssertHalo(page: Page, expectedAnchor: string): P
   const targetWidget = page.locator(`#${expectedAnchor}`).first();
   await targetWidget.waitFor({ state: 'attached', timeout: 5000 });
 
-  // Wait for the halo to be applied (scrollToAnchor fires after 300ms delay)
-  await expect(targetWidget).toHaveClass(/widget-halo/, { timeout: 3000 });
+  // Wait for the halo to be applied (scrollToAnchor fires after a 300ms delay, but the
+  // dashboard's heavy Nivo charts can push the post-nav scroll/halo past 3s on a fresh load
+  // under the mobile project — verified the halo DOES apply, just slowly; give it room).
+  await expect(targetWidget).toHaveClass(/widget-halo/, { timeout: 8000 });
 
   // Widget must be visible in the viewport (scrolled into view)
   await expect(targetWidget).toBeInViewport({ timeout: 3000 });

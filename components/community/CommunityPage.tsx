@@ -101,15 +101,10 @@ export const OVERLAY_C7: OverlayAttrs = {
   'data-overlay-dashboard': 'replays',
 };
 
-export const OVERLAY_S2: OverlayAttrs = {
-  'data-overlay-tier': '2',
-  'data-overlay-events': 'Mark Created,Section Viewed',
-  'data-overlay-delta': 'S2',
-  'data-overlay-metric': 'Board dwell → Repeat Visits',
-  'data-overlay-why':
-    "The Suns board is the community's primary home — always-present social proof that members have left their mark here.",
-  'data-overlay-dashboard': 'retention',
-};
+// NOTE: the ambient SunsLayer (CommunitySunsSection) is decorative and intentionally NOT an
+// overlay region — instrumenting that full-page layer resolved its rect to the whole page,
+// producing a full-viewport highlight ring + a full-viewport mask cut-out that erased the dim.
+// The Suns-board S2 metric is highlighted on the bounded marks-intro region (MarksIntroSection).
 
 const TABS = [
   { id: 'activity', label: 'Activity' },
@@ -202,7 +197,6 @@ export function CommunityPage({
       <CommunitySunsSection
         boardSeed={boardSeed}
         supporterCount={supporterCount}
-        overlay={OVERLAY_S2}
       />
 
       {/* Cross-surface top bar (UnifiedNav) is mounted once in app/layout.tsx. */}

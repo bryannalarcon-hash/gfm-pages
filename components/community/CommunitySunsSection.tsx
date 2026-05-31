@@ -11,10 +11,8 @@
 import React, { useMemo } from 'react';
 import type { BoardSeed } from '@/lib/marks/types';
 import { COMMUNITY_DENSITY } from '@/lib/marks/types';
-import type { OverlayAttrs } from '@/lib/overlay/types';
 import { SunsLayer } from '@/components/marks/SunsLayer';
 import { SunsLegend } from '@/components/marks/SunsLegend';
-import { Instrumented } from '@/components/overlay/Instrumented';
 import { useSectionViewed } from '@/lib/analytics/section-viewed';
 
 // L3.5: This section NEVER unmounts — it is always present as the community's board.
@@ -23,13 +21,11 @@ import { useSectionViewed } from '@/lib/analytics/section-viewed';
 interface CommunitySunsSectionProps {
   boardSeed: BoardSeed;
   supporterCount: number;
-  overlay: OverlayAttrs;
 }
 
 export function CommunitySunsSection({
   boardSeed,
   supporterCount,
-  overlay,
 }: CommunitySunsSectionProps) {
   // CB-14: do NOT compute reduced-motion at render time here — matchMedia diverges between
   // SSR (false) and client (true), causing a hydration mismatch that LOCKS IN the animated
@@ -47,8 +43,14 @@ export function CommunitySunsSection({
 
   const sectionRef = useSectionViewed('suns_board');
 
+  // NOTE: the ambient SunsLayer is decorative (position:absolute, z:-1, full-bleed) and is
+  // deliberately NOT wrapped in <Instrumented> — same as the fundraiser's ambient SunsLayer.
+  // Instrumenting a full-page layer made the overlay resolve its region rect to the WHOLE page
+  // → a full-viewport highlight ring (overshooting the content box) + a full-viewport mask
+  // cut-out that erased the dim. The Suns-board feature's overlay highlight lives on the
+  // bounded, visible marks-intro region (MarksIntroSection, delta S2) instead.
   return (
-    <Instrumented attrs={overlay} regionLabel="suns-board">
+    <>
       {/* Anchor div for section-viewed IntersectionObserver */}
       <div ref={sectionRef} data-section-name="suns_board" style={{ position: 'absolute', top: 0, left: 0, width: 1, height: 1, pointerEvents: 'none' }} aria-hidden="true" />
 
@@ -76,7 +78,7 @@ export function CommunitySunsSection({
         {/* Legend and count are rendered after the hero by CommunityPage layout.
             This component only mounts the layer; the legend is in CommunitySunsLegendBar. */}
       </div>
-    </Instrumented>
+    </>
   );
 }
 

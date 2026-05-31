@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { useOverlay } from '@/lib/overlay/context';
 import { PERSONA_ORDER, PERSONA_LABELS, PERSONAS } from '@/fixtures/personas';
 import type { PersonaSlug } from '@/lib/personas/types';
+import { isInMobileFrame } from '@/lib/mobileFrame';
 
 // Generic person SVG glyph for anonymous (initial === '').
 function PersonGlyph(): JSX.Element {
@@ -121,6 +122,12 @@ export function OverlayPill(): JSX.Element | null {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // CB-104: when running inside the CB-96 mobile-preview iframe, this pill must be
+  // suppressed — the parent document hosts the pill instead (outside the phone bezel).
+  // SSR renders the pill (inFrame starts false) then hides it after mount → no hydration mismatch.
+  const [inFrame, setInFrame] = useState(false);
+  useEffect(() => { setInFrame(isInMobileFrame()); }, []);
+
   const pillRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   // Track first activation for pulse animation.
@@ -191,6 +198,9 @@ export function OverlayPill(): JSX.Element | null {
   );
 
   if (!demoMode) return null;
+
+  // CB-104: suppress pill inside the mobile-preview iframe — parent hosts it instead.
+  if (inFrame) return null;
 
   // CB-18: suppress pill on /dashboard — the internal analytics surface should not show
   // demo affordances. State is preserved in context so returning to a product page

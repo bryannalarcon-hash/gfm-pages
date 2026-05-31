@@ -76,19 +76,33 @@ function isTopBarElement(el: Element): boolean {
 // element's laid-out descendants. Returns null when nothing is rendered (hidden) → skip.
 function regionRect(el: Element): DOMRect | null {
   const own = el.getBoundingClientRect();
-  if (own.width > 0 || own.height > 0) return own;
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, found = false;
-  for (const child of Array.from(el.querySelectorAll('*'))) {
-    const r = child.getBoundingClientRect();
-    if (r.width > 0 || r.height > 0) {
-      found = true;
-      if (r.left < minX) minX = r.left;
-      if (r.top < minY) minY = r.top;
-      if (r.right > maxX) maxX = r.right;
-      if (r.bottom > maxY) maxY = r.bottom;
+  let raw: DOMRect | null = (own.width > 0 || own.height > 0) ? own : null;
+  if (!raw) {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, found = false;
+    for (const child of Array.from(el.querySelectorAll('*'))) {
+      const r = child.getBoundingClientRect();
+      if (r.width > 0 || r.height > 0) {
+        found = true;
+        if (r.left < minX) minX = r.left;
+        if (r.top < minY) minY = r.top;
+        if (r.right > maxX) maxX = r.right;
+        if (r.bottom > maxY) maxY = r.bottom;
+      }
     }
+    raw = found ? new DOMRect(minX, minY, maxX - minX, maxY - minY) : null;
   }
-  return found ? new DOMRect(minX, minY, maxX - minX, maxY - minY) : null;
+  if (!raw) return null;
+  // CB-102: clamp to the viewport. A region wrapping a horizontally-scrollable carousel can
+  // have a rect far wider than the screen (its off-screen cards) — on mobile that produced a
+  // cutout hole wider/taller than the viewport, blowing out the dim so highlights didn't pop
+  // ("shaded like the rest"). Desktop rects already sit within the wide viewport, so unchanged.
+  if (typeof window === 'undefined') return raw;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const left = Math.max(0, Math.min(raw.left, vw));
+  const top = Math.max(0, Math.min(raw.top, vh));
+  const right = Math.max(0, Math.min(raw.right, vw));
+  const bottom = Math.max(0, Math.min(raw.bottom, vh));
+  return new DOMRect(left, top, Math.max(0, right - left), Math.max(0, bottom - top));
 }
 
 // CB-26: exported for unit testing. Compute clamped top/left for the blob card
@@ -240,6 +254,12 @@ export function OverlayLayer(): JSX.Element | null {
   // Click interception (capture phase, whole document).
   useEffect(() => {
     if (!overlayOn) return;
+    // CB-18: the overlay is fully suppressed on /dashboard (see the `return null` below). The
+    // render guard runs AFTER hooks, so without this check the capture handler would still
+    // install and stopPropagation()/preventDefault() every click on the dashboard while
+    // overlayOn is persisted true — silently swallowing the demo-data toggle (and every other
+    // control) with NO visible dim to explain why ("the button isn't working").
+    if (pathname?.startsWith('/dashboard')) return;
 
     function onClickCapture(e: MouseEvent) {
       const target = e.target as Element | null;
@@ -295,7 +315,7 @@ export function OverlayLayer(): JSX.Element | null {
 
     document.addEventListener('click', onClickCapture, { capture: true });
     return () => document.removeEventListener('click', onClickCapture, { capture: true });
-  }, [overlayOn, regions]);
+  }, [overlayOn, regions, pathname]);
 
   // CB-18: suppress the overlay on /dashboard to keep the internal analytics surface clean.
   // We do NOT write to localStorage — the user's prior overlay state is preserved so
@@ -318,8 +338,10 @@ export function OverlayLayer(): JSX.Element | null {
           page content shows at FULL brightness inside each highlight — the regions
           visibly pop above the scrim while the rest of the page stays dimmed.
           (Previously a flat inset:0 tint covered the highlights too, so they read
-          as dimmed — the CB-17 defect.) pointerEvents:'all' keeps the scrim the
-          top clickable surface; the document capture handler hit-tests regions. */}
+          as dimmed — the CB-17 defect.) CB-99: pointerEvents:'none' so the scrim does
+          NOT block touch-scroll on mobile — the document capture-phase click handler
+          still intercepts TAPS by coordinate (a tap fires a `click` it preventDefaults;
+          a scroll is `touchmove`, never a click, so scrolling passes through). */}
       <svg
         aria-hidden="true"
         width="100%"
@@ -330,7 +352,7 @@ export function OverlayLayer(): JSX.Element | null {
           width: '100vw',
           height: '100vh',
           zIndex: 900,
-          pointerEvents: 'all',
+          pointerEvents: 'none',
         }}
       >
         <defs>
