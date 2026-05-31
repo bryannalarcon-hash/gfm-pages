@@ -1,0 +1,104 @@
+/* ============================================================================
+   "Before" — faithful recreations of the CURRENT live GoFundMe pages
+   (baseline the redesign improves on). Swapped in by the Before/After toggle.
+   Built to match uploads/gfm-reference/*.png. Distinctive current-site traits:
+     • narrow centred single column
+     • GREEN CTAs (Donate = lime #ccf88e, Share/Follow = dark green #274a34)
+       — exactly the "green CTA on white" pattern the redesign rule removes
+     • circular conic progress rings
+     • leaderboard podium, purple Giving Fund banner, "Sharing helps" card
+   These views carry NO data-overlay-* attributes, so the metric overlay shows
+   zero highlights in Before mode (matches design-overlay.md).
+   ========================================================================== */
+
+.before-view { display: none; }
+body[data-mode="before"] .after-view { display: none !important; }
+body[data-mode="before"] .before-view { display: block; }
+
+/* current pages use a narrower, left-biased column */
+.bf { max-width: 940px; margin: 0 auto; padding: var(--hrt-size-spacing-3); }
+.bf-col { max-width: 620px; }
+
+/* ---- green CTAs (pre-redesign) ---- */
+.btn--donate-green { background: var(--hrt-color-surface-brand-medium); color: var(--hrt-color-text-brand-strong); border-color: transparent; }
+.btn--donate-green:hover { filter: brightness(0.96); background: var(--hrt-color-surface-brand-medium); }
+.btn--green { background: var(--hrt-color-surface-brand-strong); color: #fff; border-color: transparent; }
+.btn--green:hover { background: var(--hrt-color-text-brand-strong); }
+
+/* ---- circular progress ring (conic) ---- */
+.ring { position: relative; width: 56px; height: 56px; border-radius: 50%;
+  background: conic-gradient(var(--hrt-color-surface-brand) calc(var(--p, 70) * 1%), var(--hrt-color-surface-neutral-medium) 0);
+  flex: none; }
+.ring--sm { width: 44px; height: 44px; }
+.ring__hole { position: absolute; inset: 5px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); }
+
+/* ---- fundraiser before ---- */
+.bf-hero { display: grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-3); }
+@media (min-width: 900px) { .bf-hero { grid-template-columns: 1fr 300px; align-items: start; } }
+.bf-title { font-size: var(--hrt-size-font-heading-md); font-weight: var(--hrt-font-weight-bold); margin: 0 0 var(--hrt-size-spacing-2); }
+.bf-img { aspect-ratio: 16/10; border-radius: var(--hrt-size-radius-md); }
+.bf-dcard { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xl); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-2); }
+.bf-raise { font-size: var(--hrt-size-font-heading-sm); font-weight: var(--hrt-font-weight-bold); }
+.bf-donor { display: flex; gap: var(--hrt-size-spacing-1); align-items: center; padding-block: var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-sm); }
+
+.bf-section { padding-block: var(--hrt-size-spacing-3); border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle); }
+.bf-givingfund { background: var(--hrt-color-surface-feature-medium); border-radius: var(--hrt-size-radius-xxl); padding: var(--hrt-size-spacing-3); }
+.bf-givingfund h3 { color: var(--hrt-color-surface-feature-strong); margin: 0 0 var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-heading-sm); }
+.bf-share-preview { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2); }
+.bf-share-card { background: #fff; border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-2); display: flex; gap: var(--hrt-size-spacing-2); align-items: center; }
+.bf-cause { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2); display: flex; align-items: center; justify-content: space-between; gap: var(--hrt-size-spacing-2); }
+
+/* leaderboard podium */
+.podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--hrt-size-spacing-1); }
+.podcard { border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-3) var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); text-align: center; position: relative; margin-top: var(--hrt-size-spacing-3); }
+.podcard--1 { background: #d6f0ec; }
+.podcard--2 { background: var(--hrt-color-surface-brand-medium); }
+.podcard--3 { background: var(--hrt-color-surface-tip-medium); }
+.podcard__ava { position: absolute; top: calc(-1 * var(--hrt-size-spacing-3)); left: 50%; transform: translateX(-50%); }
+.podcard__name { font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-2); }
+.podcard__desc { font-size: 10px; color: var(--hrt-color-text-supporting); line-height: 1.2; margin-top: 2px; min-height: 24px; }
+.podcard__amt { font-size: var(--hrt-size-font-body-md); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-1); }
+.leaderrow { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); padding-block: var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-sm); }
+.leaderrow__amt { margin-left: auto; text-align: right; font-size: var(--hrt-size-font-body-xs); }
+
+/* trust band */
+.bf-trust { background: var(--hrt-color-surface-neutral-subtle); }
+.bf-trust__grid { display: grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-3); padding-block: var(--hrt-size-spacing-4); }
+@media (min-width: 768px) { .bf-trust__grid { grid-template-columns: repeat(3, 1fr); } }
+.bf-discover { background: var(--hrt-color-surface-brand-strongest); color: #fff; padding-block: var(--hrt-size-spacing-6); }
+.bf-discover h2 { font-size: var(--hrt-size-font-heading-md); margin: 0 0 var(--hrt-size-spacing-3); max-width: 420px; }
+.bf-discover__cards { display: grid; grid-auto-flow: column; grid-auto-columns: 200px; gap: var(--hrt-size-spacing-2); overflow-x: auto; scrollbar-width: none; }
+.bf-discover__cards::-webkit-scrollbar { display: none; }
+.bf-discover .fcard { color: var(--hrt-color-text-default); }
+
+/* ---- community before ---- */
+.bf-chero { display: grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-3); align-items: center; }
+@media (min-width: 768px) { .bf-chero { grid-template-columns: 1.2fr 1fr; } }
+.bf-cover-orange { aspect-ratio: 2/1; border-radius: var(--hrt-size-radius-md); background: linear-gradient(160deg, #f6a93b, #c9651f); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: var(--hrt-font-weight-bold); letter-spacing: 0.08em; }
+.bf-cstats { display: flex; gap: var(--hrt-size-spacing-4); margin-block: var(--hrt-size-spacing-2); }
+.bf-cstats div span { display: block; }
+.bf-cstats .n { font-weight: var(--hrt-font-weight-bold); }
+.bf-cstats .l { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+.bf-feedcard { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2); margin-bottom: var(--hrt-size-spacing-3); }
+.bf-feedcard__img { aspect-ratio: 4/3; border-radius: var(--hrt-size-radius-md); margin-block: var(--hrt-size-spacing-2); }
+.bf-feedcard__react { display: flex; gap: var(--hrt-size-spacing-3); color: var(--hrt-color-text-supporting); }
+.bf-feedcard__react svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* ---- profile before ---- */
+.bf-pcard { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxl); box-shadow: var(--hrt-shadow-medium); display: grid; grid-template-columns: 1fr; overflow: hidden; }
+@media (min-width: 700px) { .bf-pcard { grid-template-columns: 360px 1fr; } }
+.bf-pcover { background: linear-gradient(180deg, #6f6f6f, #232323); min-height: 220px; display: flex; align-items: center; justify-content: center; position: relative; }
+.bf-pcover .avatar { outline: 3px solid #fff; }
+.bf-pright { padding: var(--hrt-size-spacing-4); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--hrt-size-spacing-2); }
+.bf-pname { font-size: var(--hrt-size-font-heading-lg); font-weight: var(--hrt-font-weight-bold); margin: 0; }
+.bf-pcounts { display: flex; gap: var(--hrt-size-spacing-4); }
+.bf-pcounts .n { font-weight: var(--hrt-font-weight-bold); }
+.bf-pcounts .l { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+.bf-cares { display: flex; gap: var(--hrt-size-spacing-4); flex-wrap: wrap; }
+.bf-cares span { display: inline-flex; align-items: center; gap: 6px; font-weight: var(--hrt-font-weight-bold); }
+.bf-pcols { display: grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-3); }
+@media (min-width: 900px) { .bf-pcols { grid-template-columns: 1fr 320px; align-items: start; } }
+.bf-discover-panel { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxl); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-3); }
+.bf-discover-row { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); padding-block: var(--hrt-size-spacing-1); }
+.bf-discover-row .nm { flex: 1; font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); }
+.bf-pcardmini { border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); display: flex; align-items: center; justify-content: space-between; gap: var(--hrt-size-spacing-2); }

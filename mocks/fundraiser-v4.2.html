@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Fundraiser (v4.2 · physics board) — Real-Time Alerts for Wildfire Safety</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="shared.css" />
+<link rel="stylesheet" href="overlay.css" />
+<link rel="stylesheet" href="before.css" />
+<link rel="stylesheet" href="v4.css" />
+<link rel="stylesheet" href="marks.css" />
+<style>
+  /* ---- page-specific layout ---- */
+  .layout { display: grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-4); padding-block: var(--hrt-size-spacing-3); }
+  @media (min-width: 1024px) { .layout { grid-template-columns: minmax(0,1fr) 380px; align-items: start; } }
+
+  .hero__img { aspect-ratio: 16/9; border-radius: var(--hrt-size-radius-xl); }
+  .hero__title { font-size: var(--hrt-size-font-heading-lg); font-weight: var(--hrt-font-weight-bold); letter-spacing: var(--hrt-letter-spacing-tight); margin: var(--hrt-size-spacing-2) 0 var(--hrt-size-spacing-1); }
+  .hero__org { display: flex; align-items: center; gap: var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); flex-wrap: wrap; }
+  .hero__stats { margin-top: var(--hrt-size-spacing-3); }
+  .hero__amount { font-size: var(--hrt-size-font-heading-md); font-weight: var(--hrt-font-weight-bold); }
+  .hero__sub { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-half); }
+  .togo { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-1); }
+  .hero__cta { display: flex; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-3); flex-wrap: wrap; }
+  .hero__cta .btn { flex: 1 1 160px; }
+  .followcount { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-1); }
+  .followmicro { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-half); }
+
+  .warmarrival { background: var(--hrt-color-surface-brand-subtle); color: var(--hrt-color-text-brand-strong); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-2); display:flex; gap: var(--hrt-size-spacing-1); align-items:center; }
+
+  /* returning banner */
+  .rbanner { background: var(--hrt-color-surface-brand-subtle); color: var(--hrt-color-text-brand-strong); }
+  .rbanner__inner { min-height: var(--hrt-size-spacing-5); display:flex; align-items:center; gap: var(--hrt-size-spacing-1); padding-block: var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-sm); }
+  .rbanner__inner a { color: var(--hrt-color-text-brand); font-weight: var(--hrt-font-weight-bold); white-space: nowrap; }
+
+  /* donation card */
+  .donatecard { background: #fff; border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxxl); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-3); }
+  @media (min-width: 1024px) { .rail { position: sticky; top: calc(64px + var(--hrt-size-spacing-3)); } }
+  .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--hrt-size-spacing-1); }
+  .preset { border: 1px solid var(--hrt-color-border-neutral); background: #fff; color: var(--hrt-color-text-default); border-radius: var(--hrt-size-radius-full); min-height: var(--hrt-size-spacing-6); font-weight: var(--hrt-font-weight-bold); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1; font-size: var(--hrt-size-font-body-md); }
+  .preset small { font-size: 10px; font-weight: var(--hrt-font-weight-regular); color: var(--hrt-color-text-supporting); }
+  .preset[aria-pressed="true"] { background: var(--hrt-color-button-primary-surface); color: #fff; border-color: var(--hrt-color-button-primary-surface); }
+  .preset[aria-pressed="true"] small { color: #ffffffcc; }
+  .field { width: 100%; border: 1px solid var(--hrt-color-border-neutral); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); min-height: var(--hrt-size-spacing-6); font-family: inherit; font-size: var(--hrt-size-font-body-md); background:#fff; color: var(--hrt-color-text-default); }
+  .field::placeholder { color: var(--hrt-color-text-supporting); }
+  .recnudge { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); }
+  .seg { display:flex; background:#fff; border:1px solid var(--hrt-color-border-neutral); border-radius: var(--hrt-size-radius-full); padding:2px; margin-top: var(--hrt-size-spacing-1); }
+  .seg button { flex:1; border:none; background:none; border-radius: var(--hrt-size-radius-full); min-height: 32px; font-weight: var(--hrt-font-weight-bold); font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); }
+  .seg button[aria-pressed="true"] { background: var(--hrt-color-text-default); color:#fff; }
+  .label { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); }
+  .guesttag { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); display:flex; align-items:center; justify-content:center; gap:4px; margin-top: var(--hrt-size-spacing-1); }
+  .guesttag svg { width:14px; height:14px; fill: currentColor; }
+
+  .block { padding-block: var(--hrt-size-spacing-3); border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle); }
+  .donorrow { display:flex; align-items:center; gap: var(--hrt-size-spacing-2); padding-block: var(--hrt-size-spacing-1); }
+  .donorrow__txt { font-size: var(--hrt-size-font-body-sm); }
+  .donorrow__amt { font-weight: var(--hrt-font-weight-bold); }
+  .updatecard { border:1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxxl); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-3); }
+
+  /* sticky mobile CTA */
+  .stickycta { position: fixed; left:0; right:0; bottom:0; z-index:50; background:#fff; border-top:1px solid var(--hrt-color-border-neutral-extra-subtle); box-shadow: 0px -2px 6px #0000001a; padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); padding-bottom: calc(var(--hrt-size-spacing-1) + env(safe-area-inset-bottom)); }
+  @media (min-width: 1024px) { .stickycta { display: none; } }
+
+  /* mobile bottom-sheet for rail */
+  @media (max-width: 1023px) {
+    .rail { position: fixed; left:0; right:0; bottom:0; z-index: 60; transform: translateY(105%); transition: transform var(--hrt-time-transition) var(--hrt-ease-default); max-height: 90vh; overflow:auto; }
+    body.sheet-open .rail { transform: translateY(0); }
+    .donatecard { border-radius: var(--hrt-size-radius-xxxl) var(--hrt-size-radius-xxxl) 0 0; }
+    .sheet-handle { width:40px; height:4px; border-radius: var(--hrt-size-radius-full); background: var(--hrt-color-border-neutral); margin: 0 auto var(--hrt-size-spacing-2); }
+    .sheet-backdrop { position: fixed; inset:0; background: rgba(35,35,35,0.5); z-index:55; display:none; }
+    body.sheet-open .sheet-backdrop { display:block; }
+  }
+  @media (min-width: 1024px) { .sheet-handle, .sheet-backdrop { display: none; } }
+
+  /* post-donate screen (D3) */
+  .pd { position: fixed; inset: 0; z-index: 70; background: rgba(35,35,35,0.6); display:none; align-items: flex-end; justify-content: center; }
+  @media (min-width:768px){ .pd { align-items: center; } }
+  .pd.open { display:flex; }
+  .pd__panel { background:#fff; width: 100%; max-width: 560px; max-height: 92vh; overflow:auto; border-radius: var(--hrt-size-radius-xxxl) var(--hrt-size-radius-xxxl) 0 0; padding: var(--hrt-size-spacing-3); }
+  @media (min-width:768px){ .pd__panel { border-radius: var(--hrt-size-radius-xxxl); } }
+  .pd__impact { background: var(--hrt-color-surface-brand-subtle); border-radius: var(--hrt-size-radius-xxl); padding: var(--hrt-size-spacing-3); display:flex; gap: var(--hrt-size-spacing-2); align-items:center; }
+  .pd__impact h3 { font-size: var(--hrt-size-font-heading-md); font-weight: var(--hrt-font-weight-bold); margin:0; color: var(--hrt-color-text-default); }
+  .pd__impact p { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-strong); margin: var(--hrt-size-spacing-half) 0 0; }
+  .pd__sect { margin-top: var(--hrt-size-spacing-3); }
+  .aicopy { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-sm); display:none; }
+  .aicopy.open { display:block; }
+  .aicopy__line { padding-block: var(--hrt-size-spacing-half); }
+  .pdcards { display:grid; grid-auto-flow: column; grid-auto-columns: 70%; gap: var(--hrt-size-spacing-2); overflow-x:auto; scrollbar-width:none; padding-bottom: var(--hrt-size-spacing-1); }
+  @media (min-width:768px){ .pdcards { grid-auto-columns: 1fr; grid-auto-flow: column; } }
+  .pdcards::-webkit-scrollbar { display:none; }
+</style>
+</head>
+<body class="v4-page" data-screen-label="Fundraiser page">
+
+<!-- ============================ R1 · GLOBAL NAV (KEEP AS-IS) ============================ -->
+<header class="gnav">
+  <div class="hrt-container xl gnav__inner">
+    <a class="gnav__logo" href="#"><span class="mark"><svg width="16" height="16"><use href="#i-heart"/></svg></span> gofundme</a>
+    <span class="gnav__search"><svg width="16" height="16"><use href="#i-search"/></svg> Search</span>
+    <nav class="gnav__links"><a href="#">Donate</a><a href="#">Fundraise</a><a href="#">About</a></nav>
+    <span class="gnav__spacer"></span>
+    <a class="btn btn--primary btn--md" href="#" style="display:none" id="navStart">Start a GoFundMe</a>
+    <button class="gnav__hamburger" aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
+  </div>
+</header>
+
+<!-- ============================ R2 · RETURNING-VISITOR BANNER (D8 + D13) ============================
+     L3.5 slot. Collapses to zero height for anonymous / first-time visitors.
+     Copy + LLM update summary (D13) adapt per persona. -->
+<div class="rbanner" hidden data-after-only
+     data-overlay-tier="2" data-overlay-delta="D8 · D13"
+     data-overlay-events="Banner Impression, Story Scrolled"
+     data-overlay-metric="Repeat Visits — returning-visitor recognition"
+     data-overlay-why="L2 recognition + D13 LLM update summary. Banner viewers vs non-viewers segment D7/D30 return rate. GFM-confirmed via be-thankyou-messaging-experiment."
+     data-overlay-dashboard="Repeat Visits">
+  <div class="hrt-container xl">
+    <!-- D8: close friend — greeted + D13 LLM summary of missed update -->
+    <div class="rbanner__inner" data-show="close_friend">
+      <span>Welcome back, Sarah. Sarah&nbsp;J. posted: <strong>the alert system is now live in 3 counties — 4,200 households covered.</strong></span>
+      <a href="#updates">Read update →</a>
+    </div>
+    <!-- D8: returning lapsed — reflective copy referencing goal progress -->
+    <div class="rbanner__inner" data-show="returning_lapsed">
+      <span>Welcome back, Priya. You haven’t been here since the goal crossed 50% — <strong>it’s now 78% funded.</strong></span>
+      <a href="#updates">See what changed →</a>
+    </div>
+    <!-- anonymous / extrovert / shared_by_extro / profile_owner: banner collapses (no fallback copy) -->
+  </div>
+</div>
+
+<div class="after-view">
+<!-- v4.2: persistent donate bar directly under the global nav -->
+<div class="donatebar" data-screen-label="Donate bar"
+  data-overlay-tier="1" data-overlay-delta="v4.2 · persistent donate bar"
+  data-overlay-events="Donate Started, Donate Completed"
+  data-overlay-metric="Donate — always-available CTA"
+  data-overlay-why="A slim sticky bar keeps Donate one tap away at any scroll depth without competing with the share-first hero. Mirrors GFM's persistent donate affordance.">
+  <div class="hrt-container v4-wrap donatebar__in">
+    <div class="donatebar__meta"><strong>$23,400</strong> raised · <span class="muted">78% of $30,000</span></div>
+    <button class="btn btn--primary btn--sm js-donate" data-cta="dock">Donate now</button>
+  </div>
+</div>
+<main class="hrt-container v4-wrap">
+  <!-- ============================ MAIN COLUMN ============================ -->
+  <div class="maincol">
+    <!-- ===================== COMPACT HERO ===================== -->
+    <section class="v4-hero" data-screen-label="Hero">
+      <div class="ph v4-hero__img"><span class="ph__label">campaign cover</span></div>
+      <div>
+        <h1 class="v4-hero__title">Real-Time Alerts for Wildfire Safety</h1>
+        <div class="v4-hero__meta"><span class="avatar avatar--sm">SJ</span> Organized by <strong>Sarah&nbsp;J.</strong> · <a class="pill pill--brand" href="community.html">Part of Watch Duty</a></div>
+        <div class="v4-hero__bar">
+          <div class="goalbar"><div class="goalbar__fill" style="width:78%"></div></div>
+          <div class="muted" style="margin-top:var(--hrt-size-spacing-1)"><strong style="color:var(--hrt-color-text-default)">$23,400</strong> raised of $30,000 · 1,247 gifts</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SHARE ENGINE — the page's primary surface (goal: shares) ===================== -->
+    <section class="spread" data-screen-label="Share studio"
+      data-overlay-tier="2" data-overlay-delta="v4 · Share Studio"
+      data-overlay-events="Share Clicked, share_channel, share_context=studio"
+      data-overlay-metric="Share — per-channel studio (primary action)"
+      data-overlay-why="Goal = maximize shares. GFM's own data: campaigns shared 6+ times raise 3× more; each share ≈ $50. D9's AI copy per channel is rendered as a ready-to-send preview so sharing is one tap. Berger & Milkman 2012 (channel tone)."
+      data-overlay-dashboard="Share / K-factor">
+      <div class="spread__eyebrow">Sharing raises 3× more</div>
+      <h2 class="spread__head">Spread the word — pick how you’ll send it</h2>
+      <p class="spread__sub">Each share brings about $50, on average. We wrote a version for every channel — tap to send.</p>
+      <div class="studio">
+        <div class="scard">
+          <div class="scard__head"><span class="chip" style="background:#e7fce3;color:#1f8a4c"><svg><use href="#i-whatsapp"/></svg></span> WhatsApp <span class="scard__tone">· friend tone</span></div>
+          <div class="bubble bubble--wa">Hey! I just backed Watch Duty’s wildfire alerts — they text you before a fire reaches your street. 78% there, want to chip in? 👇</div>
+          <button class="btn btn--primary btn--sm js-share">Send on WhatsApp</button>
+        </div>
+        <div class="scard">
+          <div class="scard__head"><span class="chip" style="background:#eef3f6"><svg><use href="#i-x"/></svg></span> X <span class="scard__tone">· punchy &amp; public</span></div>
+          <div class="bubble bubble--x">Real-time wildfire alerts, free for everyone in the fire’s path. Just backed it — 78% funded, let’s finish it.</div>
+          <button class="btn btn--primary btn--sm js-share">Post to X</button>
+        </div>
+        <div class="scard">
+          <div class="scard__head"><span class="chip" style="background:linear-gradient(135deg,#f06,#b400d8);color:#fff"><svg><use href="#i-share"/></svg></span> Instagram Story <span class="scard__tone">· visual</span></div>
+          <div class="bubble bubble--ig">A ready-made story card: “I back Watch Duty 🔥 — they warn families before wildfire hits.” + tap-through link sticker.</div>
+          <button class="btn btn--primary btn--sm js-share">Add to your story</button>
+        </div>
+        <div class="scard">
+          <div class="scard__head"><span class="chip"><svg><use href="#i-email"/></svg></span> Email <span class="scard__tone">· personal note</span></div>
+          <div class="bubble">I wanted to share something I just supported — a free service that warns families before wildfire reaches them. Here’s the link…</div>
+          <button class="btn btn--primary btn--sm js-share">Compose email</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- your share ripple — downstream reward (social currency; persona-varying) -->
+    <div class="ripple" data-after-only data-show="extrovert close_friend"
+      data-overlay-tier="2" data-overlay-delta="v4 · share ripple"
+      data-overlay-events="Share Ripple Viewed"
+      data-overlay-metric="Share ripple — downstream attribution reward"
+      data-overlay-why="Showing a sharer what their share produced (people reached → $ raised) is social currency (Berger & Milkman 2012) and is the strongest motivator to share again. Closes the K-factor loop visibly."
+      data-overlay-dashboard="Share / K-factor">
+      <svg class="ripple__viz" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="#acf86c" stroke-width="2" opacity="0.4"/>
+        <circle cx="32" cy="32" r="20" fill="none" stroke="#4a9d44" stroke-width="2" opacity="0.6"/>
+        <circle cx="32" cy="32" r="10" fill="#4a9d44"/>
+      </svg>
+      <div>
+        <div class="ripple__big">Your shares brought 12 people · $480 raised</div>
+        <div class="ripple__sub">You’re in the top 5% of sharers on this campaign. Send one more?</div>
+      </div>
+    </div>
+    <div class="ripple" data-after-only data-show="anonymous shared_by_extro returning_lapsed profile_owner"
+      data-overlay-tier="2" data-overlay-delta="v4 · share ripple (fallback)"
+      data-overlay-events="Share Ripple Prompt Viewed"
+      data-overlay-metric="Share ripple — first-share prompt"
+      data-overlay-why="L3.5 fallback: no share history yet, so prompt the first share and explain the reward to come (the ripple). Never an empty state."
+      data-overlay-dashboard="Share / K-factor">
+      <svg class="ripple__viz" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="#b7b7b6" stroke-width="2" opacity="0.4"/>
+        <circle cx="32" cy="32" r="20" fill="none" stroke="#b7b7b6" stroke-width="2" opacity="0.6"/>
+        <circle cx="32" cy="32" r="10" fill="#b7b7b6"/>
+      </svg>
+      <div>
+        <div class="ripple__big">Share once and watch your ripple grow</div>
+        <div class="ripple__sub">We’ll show you how many people your share brought — and how much they raised.</div>
+      </div>
+    </div>
+
+    <!-- secondary actions: Donate + Follow stay reachable, below Share -->
+    <div class="v4-second">
+      <button class="btn btn--primary js-donate" data-cta="hero"
+        data-overlay-tier="1" data-overlay-delta="v4 · Donate (secondary)"
+        data-overlay-events="Donate Started, Donate Completed"
+        data-overlay-metric="Donate — single-screen form"
+        data-overlay-why="Donate stays one tap away (it's the conversion), but on this page Share is the headline action. Single-screen form, guest default."
+        data-overlay-dashboard="Donate Funnel">Donate</button>
+      <button class="btn btn--secondary js-follow" data-show="anonymous extrovert shared_by_extro profile_owner"
+        data-overlay-tier="2" data-overlay-delta="v4 · Follow"
+        data-overlay-events="Follow Clicked" data-overlay-metric="Follow — retention"
+        data-overlay-why="Follow keeps sharers in the loop so they share future updates too." data-overlay-dashboard="Repeat Visits">Follow</button>
+      <button class="btn btn--following js-follow hidden" data-show="close_friend returning_lapsed"><svg width="18" height="18"><use href="#i-check"/></svg> Following</button>
+    </div>
+
+    <!-- ===================== TOP SHARERS BOARD (gamifies sharing) ===================== -->
+    <section class="sharerboard v4-block" data-screen-label="Top sharers"
+      data-overlay-tier="2" data-overlay-delta="v4 · top sharers"
+      data-overlay-events="Sharer Board Viewed"
+      data-overlay-metric="Top sharers — gamified sharing"
+      data-overlay-why="A leaderboard of SHARERS (not donors) makes spreading the word a status game. GFM data: 6+ shares in the first days → 3× raised. Recognizes the K-factor heroes."
+      data-overlay-dashboard="Share / K-factor">
+      <h2 class="v4-h">Top sharers this week</h2>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-sm); margin:0 0 var(--hrt-size-spacing-2)">The people spreading the word the furthest.</p>
+      <div class="sharerrow"><span class="sharerrow__rank">1</span><span class="avatar avatar--sm">MT</span><span class="sharerrow__nm">Mike T.</span><span class="sharerrow__stat"><strong>14 shares</strong><div>$620 inspired</div></span></div>
+      <div class="sharerrow"><span class="sharerrow__rank">2</span><span class="avatar avatar--sm">SK</span><span class="sharerrow__nm">Sarah K.</span><span class="sharerrow__stat"><strong>9 shares</strong><div>$410 inspired</div></span></div>
+      <div class="sharerrow"><span class="sharerrow__rank">3</span><span class="avatar avatar--sm">AC</span><span class="sharerrow__nm">Ana C.</span><span class="sharerrow__stat"><strong>6 shares</strong><div>$300 inspired</div></span></div>
+    </section>
+
+    <!-- ===================== v4.2 · MARKS — minimized intro (the board now lives in the page background) ===================== -->
+    <section class="block" data-screen-label="Marks intro">
+      <div class="marks-intro"
+        data-overlay-tier="2" data-overlay-delta="v4.2 · Marks (ambient)"
+        data-overlay-events="Board Viewed, Mark Created"
+        data-overlay-metric="Repeat Visits + Share — this campaign's crowd"
+        data-overlay-why="The hearts flanking the page are this campaign's 847 supporters — a felt picture of who showed up, without competing with the donate CTA. Follow places one, sharing colours it, giving grows it.">
+        <div class="marks-intro__txt">
+          <div class="marks-intro__h">847 supporters surround this page</div>
+          <p class="marks-intro__p">Every sun in the margins showed up for this campaign. <b>Follow</b> lights yours · <b>sharing</b> colours it · <b>giving</b> grows it — it’ll be here when you come back.</p>
+          <div class="board__legend"><span><span class="mark mark--xs"></span> followed</span><span><span class="mark mark--sm mark--lime sun-demo--share"></span> shared</span><span><span class="mark mark--sm mark--gold sun-demo--give"></span> gave</span></div>
+        </div>
+        <button class="btn btn--primary marks-intro__btn" disabled>Leave your sun — do one thing first</button>
+      </div>
+    </section>
+
+    <!-- ===================== R4 · STORY ===================== -->
+    <section class="block" data-screen-label="Story">
+      <div class="hero__org" style="margin-bottom:var(--hrt-size-spacing-2)">
+        <span class="avatar avatar--sm">SJ</span>
+        <span>Sarah J. · May 12, 2026</span>
+      </div>
+      <p style="margin:0">When wildfire moves, minutes decide everything. Watch Duty’s volunteer network of reporters, pilots, and dispatchers tracks active fires and pushes real-time evacuation alerts to the people in their path — free, ad-free, and built for the moment the sky turns orange.</p>
+      <p>This campaign funds the alerting infrastructure: the servers, the on-call reporting desk, and the mapping that turns scattered scanner traffic into a single trustworthy notification on your phone. Every dollar extends coverage to another county before the next fire season.</p>
+      <a href="#" class="muted" style="color:var(--hrt-color-text-brand); font-weight:var(--hrt-font-weight-bold)">Read more ▾</a>
+      <div style="margin-top:var(--hrt-size-spacing-3)">
+        <button class="btn btn--secondary js-donate" data-cta="story">Donate</button>
+      </div>
+    </section>
+
+    <!-- ===================== R6 · DONOR ACTIVITY (D6) ===================== -->
+    <section class="block" data-screen-label="Donor activity">
+      <div class="row" style="justify-content:space-between; margin-bottom:var(--hrt-size-spacing-2)">
+        <h2 class="section-h">Donations</h2>
+        <span class="muted" style="font-size:var(--hrt-size-font-body-sm)">1,247 donors</span>
+      </div>
+
+      <!-- D6 · contextual donor-list prompt (state resolved SSR; here: high momentum) -->
+      <div class="prompt" data-after-only
+        data-overlay-tier="1" data-overlay-delta="D6"
+        data-overlay-events="lb_donation_list.btn_donations_donate"
+        data-overlay-metric="Donation-list momentum prompt"
+        data-overlay-why="GFM-confirmed: fe-ssr-campaign-money-box-donation-list-prompt is a live A/B. Adapts to campaign state; donor-list readers are high-intent — direct conversion uplift."
+        data-overlay-dashboard="Donate Funnel">
+        <span class="prompt__text">47 people donated in the last hour — keep it going.</span>
+        <button class="btn btn--primary btn--sm js-donate" data-cta="donorlist">Donate now</button>
+      </div>
+
+      <div style="margin-top:var(--hrt-size-spacing-2)">
+        <div class="donorrow"><span class="avatar avatar--sm">JD</span><div class="donorrow__txt"><span class="donorrow__amt">Jane D.</span> · $50<div class="muted">“Go Watch Duty!”</div></div></div>
+        <div class="donorrow"><span class="avatar avatar--sm avatar--neutral"><svg width="18" height="18"><use href="#i-person"/></svg></span><div class="donorrow__txt"><span class="donorrow__amt">Anonymous</span> · $25</div></div>
+        <div class="donorrow"><span class="avatar avatar--sm">MS</span><div class="donorrow__txt"><span class="donorrow__amt">Mark S.</span> · $100<div class="muted">“Amazing work.”</div></div></div>
+      </div>
+      <div class="row gap-2" style="margin-top:var(--hrt-size-spacing-2)">
+        <button class="btn btn--secondary btn--sm">See all donations</button>
+        <button class="btn btn--secondary btn--sm">See top donations</button>
+      </div>
+    </section>
+
+    <!-- ===================== R7 · UPDATES (D4 share, D13 source) ===================== -->
+    <section class="block" id="updates" data-screen-label="Updates">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">Updates</h2>
+      <article class="updatecard">
+        <div class="hero__org" style="margin-bottom:var(--hrt-size-spacing-1)">
+          <span class="avatar avatar--sm">SJ</span><span>Sarah J. · May 26, 2026</span>
+        </div>
+        <p style="margin:0">The alert system is now live in 3 counties. In the first week, 4,200 households received their first real-time wildfire notification — and our reporting desk is now staffed 18 hours a day…</p>
+        <a href="#" class="muted" style="color:var(--hrt-color-text-brand); font-weight:var(--hrt-font-weight-bold)">Read full update ▾</a>
+        <!-- D4 · post-update share row -->
+        <div style="margin-top:var(--hrt-size-spacing-2)" data-after-only
+          data-overlay-tier="2" data-overlay-delta="D4 · D13"
+          data-overlay-events="Share Clicked, share_context=update"
+          data-overlay-metric="Post-update share + D13 summary source"
+          data-overlay-why="Share anchored under each update (peak emotion, Berger & Milkman 2012). This update body is the source D13 summarizes for the R2 banner."
+          data-overlay-dashboard="Share / K-factor">
+          <div class="sharerow sharerow--scroll js-sharerow">
+            <button class="chip" aria-label="Facebook"><svg><use href="#i-facebook"/></svg></button>
+            <button class="chip" aria-label="WhatsApp"><svg><use href="#i-whatsapp"/></svg></button>
+            <button class="chip" aria-label="X"><svg><use href="#i-x"/></svg></button>
+            <button class="chip" aria-label="Email"><svg><use href="#i-email"/></svg></button>
+            <button class="chip" aria-label="Copy link"><svg><use href="#i-link"/></svg></button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============================ R5 · DONATION CARD (rail / bottom-sheet) ============================ -->
+  <aside class="rail" aria-label="Donation">
+    <div class="donatecard"
+      data-overlay-tier="1" data-overlay-delta="D1 · D10 · D12"
+      data-overlay-events="Amount Selected, Donate Started, Donate Completed"
+      data-overlay-metric="Donation card — single-screen form, smart presets, recurring nudge"
+      data-overlay-why="D1 single-screen + D10 smart presets (anchoring; middle default-selected) + D12 inline recurring nudge (3 live GFM experiments). Tier-1 core conversion."
+      data-overlay-dashboard="Donate Funnel">
+      <div class="sheet-handle"></div>
+      <div class="row" style="justify-content:space-between; margin-bottom:var(--hrt-size-spacing-2)">
+        <span class="label">Choose an amount</span>
+        <button class="js-sheet-close btn--sm" style="border:none;background:none;color:var(--hrt-color-text-supporting)" aria-label="Close" hidden>×</button>
+      </div>
+
+      <!-- D10 · smart amount presets (L3.5). First = your last donation; middle default-selected. -->
+      <!-- default cohort: anonymous / extrovert / shared_by_extro / profile_owner -->
+      <div class="presets js-presets" data-show="anonymous extrovert shared_by_extro profile_owner">
+        <button class="preset" aria-pressed="false" data-amt="10">$10</button>
+        <button class="preset" aria-pressed="true" data-amt="25">$25</button>
+        <button class="preset" aria-pressed="false" data-amt="50">$50</button>
+      </div>
+      <!-- close_friend: last gift $50 -->
+      <div class="presets js-presets hidden" data-show="close_friend">
+        <button class="preset" aria-pressed="false" data-amt="50">$50<small>your last</small></button>
+        <button class="preset" aria-pressed="true" data-amt="100">$100</button>
+        <button class="preset" aria-pressed="false" data-amt="250">$250</button>
+      </div>
+      <!-- returning_lapsed: 14mo-old last gift $25 -->
+      <div class="presets js-presets hidden" data-show="returning_lapsed">
+        <button class="preset" aria-pressed="false" data-amt="25">$25<small>your last</small></button>
+        <button class="preset" aria-pressed="true" data-amt="50">$50</button>
+        <button class="preset" aria-pressed="false" data-amt="100">$100</button>
+      </div>
+
+      <input class="field" style="margin-top:var(--hrt-size-spacing-1)" placeholder="Custom amount" inputmode="numeric" aria-label="Custom amount" />
+
+      <!-- D12 · inline recurring nudge -->
+      <div class="recnudge" style="margin-top:var(--hrt-size-spacing-2)" data-after-only>
+        <span>Watch Duty needs ongoing support. Make this <strong class="js-monthly-amt">$25</strong>/month?</span>
+        <div class="seg js-freq">
+          <button aria-pressed="true" data-freq="once">One-time</button>
+          <button aria-pressed="false" data-freq="monthly">Monthly</button>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:space-between; margin-top:var(--hrt-size-spacing-2)">
+        <span class="label">GoFundMe tip</span>
+        <span class="muted" style="font-size:var(--hrt-size-font-body-sm)">15% · $3.75 ▾</span>
+      </div>
+
+      <div class="stack gap-1" style="margin-top:var(--hrt-size-spacing-2)">
+        <input class="field" placeholder="Card number" aria-label="Card number" />
+        <div class="row gap-1">
+          <input class="field" placeholder="MM / YY" aria-label="Expiry" />
+          <input class="field" placeholder="CVC" aria-label="CVC" />
+        </div>
+        <input class="field" placeholder="Email for receipt" aria-label="Email" />
+      </div>
+
+      <button class="btn btn--primary btn--block js-donate js-submit" style="margin-top:var(--hrt-size-spacing-2)" data-cta="card">Donate <span class="js-cta-amt">$25</span></button>
+      <div class="guesttag"><svg><use href="#i-lock"/></svg> Guest checkout · secured by Stripe</div>
+    </div>
+  </aside>
+</main>
+</div><!-- /after-view -->
+
+<!-- ============================ BEFORE · current GoFundMe fundraiser (recreation of live site) ============================ -->
+<div class="before-view">
+  <div class="bf bf-col">
+    <h1 class="bf-title">Real-Time Alerts for Wildfire Safety</h1>
+    <div class="bf-hero">
+      <div class="ph bf-img"><span class="ph__label">hero image</span></div>
+      <div class="bf-dcard">
+        <div class="row gap-2">
+          <div class="ring" style="--p:70"><div class="ring__hole">70%</div></div>
+          <div><div class="bf-raise">$2,102 <span class="muted" style="font-weight:var(--hrt-font-weight-regular)">raised of $3K</span></div><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">21 donations</div></div>
+        </div>
+        <button class="btn btn--donate-green btn--block btn--md" style="margin-top:var(--hrt-size-spacing-2)">Donate now</button>
+        <button class="btn btn--green btn--block btn--md" style="margin-top:var(--hrt-size-spacing-1)">Share</button>
+        <div style="margin-top:var(--hrt-size-spacing-2)">
+          <div class="bf-donor"><span class="avatar avatar--sm">MV</span><div><strong>Mohan Vivekanandan</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">$200 · 3 mos</div></div></div>
+          <div class="bf-donor"><span class="avatar avatar--sm avatar--neutral"><svg width="16" height="16"><use href="#i-person"/></svg></span><div><strong>Niu Nahesh</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">$50 · 3 mos</div></div></div>
+        </div>
+        <button class="btn btn--secondary btn--block btn--sm" style="margin-top:var(--hrt-size-spacing-1)">See top ▾</button>
+      </div>
+    </div>
+
+    <div style="margin-top:var(--hrt-size-spacing-3)">
+      <div class="row gap-1" style="margin-bottom:var(--hrt-size-spacing-1)">
+        <span class="avatar avatar--sm">JV</span>
+        <span style="font-size:var(--hrt-size-font-body-sm)">Janahan G. Vivekanandan is organizing this fundraiser.</span>
+      </div>
+      <span class="pill pill--brand"><svg width="14" height="14" style="fill:currentColor"><use href="#i-check"/></svg> Tax deductible</span>
+      <p style="margin-top:var(--hrt-size-spacing-2)">As climate-related disasters worsen, it’s crucial that we act swiftly. I believe in the mission of Watch Duty. This campaign aims to help Watch Duty deliver fast, real-time wildfire alerts. Your contributions will support 24/7 incident monitoring, ensuring that firefighters and first responders get clearer updates as conditions evolve…</p>
+      <div class="row gap-2" style="margin-top:var(--hrt-size-spacing-2)">
+        <button class="btn btn--secondary">Donate</button>
+        <button class="btn btn--secondary">Share</button>
+      </div>
+    </div>
+
+    <div class="bf-section" style="border-top:none">
+      <div class="bf-givingfund">
+        <h3>Take your nonprofit giving to the next level today.</h3>
+        <button class="btn btn--green btn--sm">Start a Giving Fund</button>
+      </div>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h">Communities <span class="muted">1</span></h2>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-sm); margin:var(--hrt-size-spacing-1) 0">Join others rallying around this cause.</p>
+      <a class="pill pill--neutral" href="community.html"><svg width="14" height="14" style="fill:var(--hrt-color-surface-feature-strong)"><use href="#i-heart"/></svg> Watch Duty</a>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-1)">Sharing helps more than you think</h2>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-sm)">On average, each share can inspire $50 in donations by helping this fundraiser reach more people.</p>
+      <div class="bf-share-preview" style="margin-top:var(--hrt-size-spacing-2)">
+        <div class="bf-share-card">
+          <div class="ph" style="width:90px;height:60px;border-radius:var(--hrt-size-radius-sm)"><span class="ph__label">img</span></div>
+          <div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Real-Time Alerts for Wildfire Safety</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Organized by Janahan</div></div>
+          <div class="ring ring--sm" style="--p:70"><div class="ring__hole">70%</div></div>
+        </div>
+        <div class="sharerow" style="margin-top:var(--hrt-size-spacing-2); justify-content:center">
+          <button class="chip" aria-label="Copy link"><svg><use href="#i-link"/></svg></button>
+          <button class="chip" aria-label="Facebook"><svg><use href="#i-facebook"/></svg></button>
+          <button class="chip" aria-label="WhatsApp"><svg><use href="#i-whatsapp"/></svg></button>
+          <button class="chip" aria-label="Messenger"><svg><use href="#i-messenger"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">Cause</h2>
+      <div class="bf-cause"><div><strong style="font-size:var(--hrt-size-font-body-sm)">Fundraise for Watch Duty Wildfire Alerts</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">View campaign</div></div><span class="avatar avatar--sm" style="background:var(--hrt-color-surface-tip-medium)"><svg width="16" height="16" style="fill:var(--hrt-color-text-tip)"><use href="#i-heart"/></svg></span></div>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">Leaderboard <span class="muted">186</span></h2>
+      <div class="podium">
+        <div class="podcard podcard--1"><span class="avatar avatar--sm podcard__ava">AK</span><div class="podcard__name">Arnie Katz</div><div class="podcard__desc">Seconds Matter with Watch Duty</div><div class="podcard__amt">$5,392</div></div>
+        <div class="podcard podcard--2"><span class="avatar avatar--sm podcard__ava">TC</span><div class="podcard__name">Tim Cadogan</div><div class="podcard__desc">Support Watch Duty</div><div class="podcard__amt">$16,344</div></div>
+        <div class="podcard podcard--3"><span class="avatar avatar--sm podcard__ava">JG</span><div class="podcard__name">Janahan G.</div><div class="podcard__desc">Real-Time Alerts</div><div class="podcard__amt">$2,102</div></div>
+      </div>
+      <div style="margin-top:var(--hrt-size-spacing-3)">
+        <div class="leaderrow"><span class="muted">4</span><span class="avatar avatar--sm avatar--neutral">AY</span><div><strong>Albert Yam</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Responding to Wildfires</div></div><span class="leaderrow__amt"><strong>$1,750</strong><div class="muted">raised</div></span></div>
+        <div class="leaderrow"><span class="muted">5</span><span class="avatar avatar--sm avatar--neutral">CW</span><div><strong>Char de Wolfe</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Help Us Deliver Real-Time Alerts</div></div><span class="leaderrow__amt"><strong>$1,536</strong><div class="muted">raised</div></span></div>
+        <div class="leaderrow"><span class="muted">6</span><span class="avatar avatar--sm avatar--neutral">MR</span><div><strong>Michal Russ</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">When Seconds Matter</div></div><span class="leaderrow__amt"><strong>$1,500</strong><div class="muted">raised</div></span></div>
+      </div>
+      <button class="btn btn--secondary btn--sm" style="margin-top:var(--hrt-size-spacing-2)">See all</button>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">Organizer</h2>
+      <div class="row gap-2 wrap">
+        <span class="avatar avatar--sm">JV</span>
+        <div style="flex:1; min-width:120px"><strong style="font-size:var(--hrt-size-font-body-sm)">Janahan G. Vivekanandan</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Organizer · Los Altos, CA</div></div>
+        <span class="muted">→</span>
+        <span class="avatar avatar--sm" style="background:var(--hrt-color-surface-tip-medium)"><svg width="16" height="16" style="fill:var(--hrt-color-text-tip)"><use href="#i-heart"/></svg></span>
+        <div><strong style="font-size:var(--hrt-size-font-body-sm)">Watch Duty</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Beneficiary</div></div>
+      </div>
+      <button class="btn btn--secondary btn--sm" style="margin-top:var(--hrt-size-spacing-2)">Message</button>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-xs); margin-top:var(--hrt-size-spacing-3)">Created February 13th, 2026 · Other</p>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-xs)">⚑ Report fundraiser</p>
+    </div>
+  </div>
+
+  <div class="bf-trust">
+    <div class="bf bf-trust__grid">
+      <div><strong>Easy</strong><div class="muted" style="font-size:var(--hrt-size-font-body-sm)">Donate quickly and easily.</div></div>
+      <div><strong>Powerful</strong><div class="muted" style="font-size:var(--hrt-size-font-body-sm)">Send help right to the people and causes you care about.</div></div>
+      <div><strong>Trusted</strong><div class="muted" style="font-size:var(--hrt-size-font-body-sm)">Our Trust &amp; Safety team works around the clock.</div></div>
+    </div>
+  </div>
+
+  <div class="bf-discover">
+    <div class="bf">
+      <h2>More ways to make a difference. Find fundraisers inspired by what you care about.</h2>
+      <div class="bf-discover__cards">
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Help the Behn Family Stay in Their Home</div><div class="goalbar"><div class="goalbar__fill" style="width:60%"></div></div><div class="fcard__meta">$26,660 raised</div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Support for Austin Shooting Victims’ Families</div><div class="goalbar"><div class="goalbar__fill" style="width:12%"></div></div><div class="fcard__meta">$100 raised</div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Support Fern’s Journey to Top Surgery</div><div class="goalbar"><div class="goalbar__fill" style="width:35%"></div></div><div class="fcard__meta">$531 raised</div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Support Tristen’s Recovery</div><div class="goalbar"><div class="goalbar__fill" style="width:48%"></div></div><div class="fcard__meta">$3,425 raised</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ R8 · FOOTER (KEEP AS-IS) ============================ -->
+<footer class="gfooter">
+  <div class="hrt-container xl gfooter__grid">
+    <div class="gfooter__col">
+      <div class="gfooter__brand"><span class="mark"></span><strong style="color:var(--hrt-color-text-brand)">gofundme</strong></div>
+      <p>The world’s most trusted free fundraising platform.</p>
+    </div>
+    <div class="gfooter__col"><h4>Fundraise</h4><a href="#">How it works</a><a href="#">Categories</a><a href="#">Team fundraising</a></div>
+    <div class="gfooter__col"><h4>About</h4><a href="#">About us</a><a href="#">Newsroom</a><a href="#">Careers</a></div>
+    <div class="gfooter__col"><h4>Resources</h4><a href="#">Help center</a><a href="#">Giving Guarantee</a><a href="#">Terms</a></div>
+  </div>
+</footer>
+
+<!-- sticky mobile CTA bar (D1) -->
+<div class="stickycta" data-after-only>
+  <button class="btn btn--primary btn--block js-donate" data-cta="sticky">Donate</button>
+</div>
+<div class="sheet-backdrop js-sheet-close"></div>
+
+<!-- ============================ D3 · POST-DONATE SCREEN ============================
+     Replaces the lb_postdonate_share lightbox. Runs the second conversion.
+     Impact line + carousel ranking adapt per persona (L3.5). -->
+<div class="pd" id="postDonate" aria-modal="true" role="dialog">
+  <div class="pd__panel">
+    <div class="row" style="justify-content:flex-end"><button class="js-pd-close" style="border:none;background:none;font-size:22px;color:var(--hrt-color-text-supporting)" aria-label="Close">×</button></div>
+
+    <!-- 1 · personalized thank-you w/ impact framing -->
+    <div class="pd__impact"
+      data-overlay-tier="1" data-overlay-delta="D3"
+      data-overlay-events="Post Donate Viewed"
+      data-overlay-metric="Post-donate as a first-class screen"
+      data-overlay-why="GFM-confirmed: donation_upsell + fe-ssr-post-donate-redesign-ab are live. 25–40% take a secondary action. Impact framing is the load-bearing copy."
+      data-overlay-dashboard="Post-Donate">
+      <div class="ph" style="width:80px;height:80px;border-radius:var(--hrt-size-radius-xl);flex:none"><span class="ph__label">thumb</span></div>
+      <div>
+        <!-- impact line variants -->
+        <div data-show="anonymous extrovert shared_by_extro profile_owner">
+          <h3>Your $25 funds 5 days of wildfire alerts.</h3>
+          <p data-show="shared_by_extro">Want to thank Mike T. for the intro? Share that you gave.</p>
+        </div>
+        <div data-show="close_friend"><h3>Welcome back, Sarah.</h3><p>Your 3rd donation to this fundraiser — thank you for staying with it.</p></div>
+        <div data-show="returning_lapsed"><h3>Welcome back, Priya.</h3><p>Your 2nd donation — thanks for coming back after all this time.</p></div>
+      </div>
+    </div>
+
+    <!-- 2 · Share (peak emotional moment) + D9 demo sub-toggle -->
+    <div class="pd__sect"
+      data-overlay-tier="2" data-overlay-delta="D4 · D9"
+      data-overlay-events="Post Donate Share Clicked, share_channel"
+      data-overlay-metric="Post-donate per-channel share + AI copy"
+      data-overlay-why="Sharing at peak arousal (Berger & Milkman 2012). D9 sub-toggle reveals generic vs LLM copy so the AI delta is visible to a portfolio viewer."
+      data-overlay-dashboard="Share / K-factor">
+      <div class="eyebrow">Share this fundraiser</div>
+      <div class="sharerow" style="margin-top:var(--hrt-size-spacing-1)">
+        <button class="chip" aria-label="Facebook"><svg><use href="#i-facebook"/></svg></button>
+        <button class="chip" aria-label="WhatsApp"><svg><use href="#i-whatsapp"/></svg></button>
+        <button class="chip" aria-label="X"><svg><use href="#i-x"/></svg></button>
+        <button class="chip" aria-label="Messenger"><svg><use href="#i-messenger"/></svg></button>
+        <button class="chip" aria-label="SMS"><svg><use href="#i-sms"/></svg></button>
+        <button class="chip" aria-label="Email"><svg><use href="#i-email"/></svg></button>
+        <button class="chip" aria-label="Copy link"><svg><use href="#i-link"/></svg></button>
+      </div>
+      <button class="js-aitoggle" style="border:none;background:none;color:var(--hrt-color-text-brand);font-weight:var(--hrt-font-weight-bold);font-size:var(--hrt-size-font-body-xs);margin-top:var(--hrt-size-spacing-1);padding:0">Show personalized copy ▾</button>
+      <div class="aicopy js-aicopy">
+        <div class="aicopy__line"><strong>WhatsApp</strong> <span class="muted">(friend-tone)</span>: “Hey! I just chipped in for Watch Duty’s wildfire alerts — they text you before a fire reaches you. Worth a look 👇”</div>
+        <div class="aicopy__line"><strong>X</strong> <span class="muted">(punchy)</span>: “Real-time wildfire alerts, free for everyone in the fire’s path. Just backed it. 78% funded — let’s finish it.”</div>
+        <div class="aicopy__line"><strong>Email</strong> <span class="muted">(personal)</span>: “I wanted to share something I just supported — a free service that warns families before wildfire reaches them…”</div>
+      </div>
+    </div>
+
+    <!-- 3 · Recurring upgrade (D3 + D12) -->
+    <div class="pd__sect"
+      data-overlay-tier="1" data-overlay-delta="D12"
+      data-overlay-events="Post Donate Recurring Upgrade Clicked"
+      data-overlay-metric="Recurring upgrade"
+      data-overlay-why="Recurring donors have ~10–20× LTV. GFM runs fe-ssr-campaign-recurring-nudge live. ~10% upgrade at post-donate."
+      data-overlay-dashboard="Recurring">
+      <div class="eyebrow">Make it monthly</div>
+      <p style="margin:var(--hrt-size-spacing-1) 0">Watch Duty needs ongoing support. $25/month would fund alerts all year.</p>
+      <div class="row gap-2 wrap">
+        <button class="btn btn--primary">Upgrade to $25/month</button>
+        <button style="border:none;background:none;color:var(--hrt-color-text-supporting);font-size:var(--hrt-size-font-body-sm)">No thanks</button>
+      </div>
+    </div>
+
+    <!-- 4 · Follow this fundraiser -->
+    <div class="pd__sect"
+      data-overlay-tier="2" data-overlay-delta="D5"
+      data-overlay-events="Post Donate Follow Clicked"
+      data-overlay-metric="Follow at post-donate"
+      data-overlay-why="Routes the donor into the follow loop at the peak emotional moment. Downstream feed on Profile (P2)."
+      data-overlay-dashboard="Repeat Visits">
+      <div class="eyebrow">Follow this fundraiser</div>
+      <div class="row gap-2 wrap" style="margin-top:var(--hrt-size-spacing-1)">
+        <button class="btn btn--secondary">Follow Real-Time Alerts</button>
+      </div>
+      <div class="followmicro">Get an email when Sarah posts an update.</div>
+    </div>
+
+    <!-- 4b · Community-follow CTA (conditional on community_id) -->
+    <div class="pd__sect" data-after-only>
+      <div class="eyebrow">Stay connected to the cause</div>
+      <div class="row gap-2 wrap" style="margin-top:var(--hrt-size-spacing-1)">
+        <a class="btn btn--secondary" href="community.html">Also follow Watch Duty</a>
+      </div>
+      <div class="followmicro">Get updates from related fundraisers too.</div>
+    </div>
+
+    <!-- 5 · You might also support (D3/D11 embedding carousel) -->
+    <div class="pd__sect"
+      data-overlay-tier="2" data-overlay-delta="D3 · D11"
+      data-overlay-events="Post Donate Similar Clicked"
+      data-overlay-metric="Embedding-ranked similar fundraisers"
+      data-overlay-why="Ranked by cosine similarity (this campaign × the user's past donations); fallback = top-3 trending in category. GFM has be_fundraiser_recommendation flag."
+      data-overlay-dashboard="Follow / Discovery">
+      <div class="eyebrow">You might also support</div>
+      <!-- caption adapts: personalized vs cold-start fallback -->
+      <div class="muted" style="font-size:var(--hrt-size-font-body-xs);margin:var(--hrt-size-spacing-half) 0" data-show="close_friend extrovert returning_lapsed">Ranked from your past donations</div>
+      <div class="muted" style="font-size:var(--hrt-size-font-body-xs);margin:var(--hrt-size-spacing-half) 0" data-show="anonymous shared_by_extro profile_owner">Trending in Wildfire Safety</div>
+      <div class="pdcards" style="margin-top:var(--hrt-size-spacing-1)">
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Rebuild the Paradise Library</div><div class="goalbar"><div class="goalbar__fill" style="width:64%"></div></div><div class="fcard__meta">$32k raised</div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Smoke-Ready Air for Schools</div><div class="goalbar"><div class="goalbar__fill" style="width:41%"></div></div><div class="fcard__meta">$11k raised</div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Volunteer Firefighter Gear Fund</div><div class="goalbar"><div class="goalbar__fill" style="width:88%"></div></div><div class="fcard__meta">$53k raised</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="icons.js"></script>
+<script src="overlay.js"></script>
+<script>
+/* ---- fundraiser page interactions (vanilla) ---- */
+(function () {
+  const body = document.body;
+  const overlayOn = () => body.getAttribute("data-overlay") === "on";
+
+  /* preset selection + live amount labels */
+  let amount = 25, freq = "once";
+  function refreshAmount() {
+    const visible = document.querySelector(".js-presets:not(.hidden)");
+    const sel = visible && visible.querySelector('[aria-pressed="true"]');
+    if (sel) amount = parseInt(sel.dataset.amt, 10);
+    document.querySelectorAll(".js-monthly-amt").forEach(e => e.textContent = "$" + amount);
+    const suffix = freq === "monthly" ? "/month" : "";
+    document.querySelectorAll(".js-cta-amt").forEach(e => e.textContent = "$" + amount + suffix);
+  }
+  document.addEventListener("click", (e) => {
+    const p = e.target.closest(".preset");
+    if (p && !overlayOn()) {
+      p.parentElement.querySelectorAll(".preset").forEach(b => b.setAttribute("aria-pressed", "false"));
+      p.setAttribute("aria-pressed", "true");
+      refreshAmount();
+    }
+    const f = e.target.closest(".js-freq button");
+    if (f && !overlayOn()) {
+      f.parentElement.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", "false"));
+      f.setAttribute("aria-pressed", "true");
+      freq = f.dataset.freq; refreshAmount();
+    }
+  });
+  document.addEventListener("personachange", refreshAmount);
+  refreshAmount();
+
+  /* follow toggle (when overlay off) */
+  document.addEventListener("click", (e) => {
+    const fb = e.target.closest(".js-follow");
+    if (fb && !overlayOn()) {
+      const following = fb.classList.contains("btn--following");
+      fb.classList.toggle("btn--following", !following);
+      fb.classList.toggle("btn--secondary", following);
+      fb.innerHTML = following ? "Follow this fundraiser" : '<svg width="18" height="18"><use href="#i-check"/></svg> Following';
+    }
+  });
+
+  /* donate -> open post-donate (mobile: open sheet first from sticky/hero) */
+  const sheetTriggers = ["hero","story","sticky","donorlist","dock"];
+  document.addEventListener("click", (e) => {
+    const d = e.target.closest(".js-donate");
+    if (!d || overlayOn()) return;
+    if (d.classList.contains("js-submit")) { openPostDonate(); body.classList.remove("sheet-open"); return; }
+    if (sheetTriggers.includes(d.dataset.cta)) { body.classList.add("sheet-open"); }
+    else { openPostDonate(); }
+  });
+  document.querySelectorAll(".js-sheet-close").forEach(b => b.addEventListener("click", () => body.classList.remove("sheet-open")));
+
+  function openPostDonate() { document.getElementById("postDonate").classList.add("open"); }
+  document.querySelectorAll(".js-pd-close").forEach(b => b.addEventListener("click", () => document.getElementById("postDonate").classList.remove("open")));
+  document.getElementById("postDonate").addEventListener("click", (e) => { if (e.target.id === "postDonate") e.currentTarget.classList.remove("open"); });
+
+  /* D9 sub-toggle */
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest(".js-aitoggle");
+    if (t && !overlayOn()) { const box = t.parentElement.querySelector(".js-aicopy"); box.classList.toggle("open"); t.textContent = box.classList.contains("open") ? "Hide personalized copy ▴" : "Show personalized copy ▾"; }
+  });
+})();
+</script>
+<script src="marks-bg.js"></script>
+<script src="suncreate.js"></script>
+</body>
+</html>

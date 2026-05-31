@@ -1,0 +1,53 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Conversation logs (planner auto-captured by scripts/prompt_logger.py; designer/coder added by hand)
+claude-*-conversation.md
+claude-*-conversation.md.bak*
+*.bak-*
+
+# Handoff docs (context-management; per-machine, not for the repo)
+handoff/
+design_handoff_1/
+design_handoff*/
+
+# Claude Code local config
+.claude/settings.local.json
+.claude/log-route.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+.vercel/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.bak
+
+# Logs
+*.log
+
+# Local capture / generated artifacts (per-machine, not for the repo)
+screenshots/
+test-results/
+.pglite/
+
+# Tooling / local state (not for the repo)
+.claude-flow/
+.claude/scheduled_tasks.lock
+tsconfig.tsbuildinfo

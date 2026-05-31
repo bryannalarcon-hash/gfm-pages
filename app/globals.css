@@ -1,0 +1,62 @@
+/* Design-system tokens (binding source) imported first, then Tailwind layers. */
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Root background ownership (architecture §8.9 / mocks reconciliation):
+  the mock moves the page background to <html> so the suns layer can sit at z-index:-1
+  behind a transparent body. We mirror that here.
+*/
+html {
+  background: var(--hrt-color-surface-default);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: transparent;
+  color: var(--hrt-color-text-default);
+  font-family: var(--hrt-font-family);
+  font-weight: var(--hrt-font-weight-regular);
+  line-height: var(--hrt-line-height-body);
+  margin: 0;
+  min-height: 100vh;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Focus visibility for keyboard a11y (test-plan §5). */
+:focus-visible {
+  outline: 2px solid var(--hrt-color-text-brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* CB-94/CB-95: the demo "Mobile view" frame toggle is for previewing mobile ON DESKTOP; on an
+   already-narrow viewport it's redundant AND overlaps the fundraiser donate bar's button.
+   Hide it ≤700px (instant + SSR-correct; !important beats the button's inline display). The
+   node stays in the DOM (the CB-66 jsdom test asserts presence, not visibility). */
+@media (max-width: 700px) {
+  [data-mobile-frame-toggle] { display: none !important; }
+}

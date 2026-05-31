@@ -1,0 +1,433 @@
+/* ============================================================================
+   Profile page — section-level layout + component CSS.
+   Extracted from mock mocks/profile-v4.2.html inline <style> block.
+   All classes here are namespaced to .v4-page context or scoped to profile
+   section class names (.hero, .chead, .recbanner, etc.) to avoid collisions.
+   ============================================================================ */
+
+/* ----------- Page layout grid ----------- */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--hrt-size-spacing-4);
+  padding-block: var(--hrt-size-spacing-3);
+  /* Prevent any child from expanding beyond the viewport width */
+  overflow-x: hidden;
+}
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 336px;
+    align-items: start;
+    overflow-x: visible;
+  }
+}
+
+/* Ensure the main column never expands past the grid cell */
+.maincol {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* ----------- Hero section ----------- */
+.hero {
+  background: linear-gradient(
+    180deg,
+    var(--hrt-color-surface-brand-subtle),
+    var(--hrt-color-surface-default)
+  );
+  border-radius: var(--hrt-size-radius-xxxl);
+  padding: var(--hrt-size-spacing-4) var(--hrt-size-spacing-3) var(--hrt-size-spacing-3);
+}
+.hero__row {
+  display: flex;
+  gap: var(--hrt-size-spacing-3);
+  align-items: flex-start;
+}
+@media (max-width: 560px) {
+  .hero__row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+.hero__name {
+  font-size: var(--hrt-size-font-heading-lg);
+  font-weight: var(--hrt-font-weight-bold);
+  letter-spacing: var(--hrt-letter-spacing-tight);
+  margin: 0;
+}
+.counts {
+  font-size: var(--hrt-size-font-body-sm);
+  color: var(--hrt-color-text-supporting);
+  margin-top: var(--hrt-size-spacing-half);
+}
+.counts strong {
+  color: var(--hrt-color-text-default);
+}
+.hero__cta {
+  display: flex;
+  gap: var(--hrt-size-spacing-2);
+  margin-top: var(--hrt-size-spacing-2);
+  flex-wrap: wrap;
+}
+.followmicro {
+  font-size: var(--hrt-size-font-body-xs);
+  color: var(--hrt-color-text-supporting);
+  margin-top: var(--hrt-size-spacing-1);
+}
+.causes {
+  display: flex;
+  gap: var(--hrt-size-spacing-1);
+  flex-wrap: wrap;
+  margin-top: var(--hrt-size-spacing-2);
+}
+@media (max-width: 560px) {
+  .causes {
+    justify-content: center;
+  }
+}
+.tenure {
+  font-size: var(--hrt-size-font-body-xs);
+  color: var(--hrt-color-text-supporting);
+  margin-top: var(--hrt-size-spacing-2);
+}
+.bionudge {
+  background: var(--hrt-color-surface-informative-medium);
+  color: var(--hrt-color-text-informative);
+  border-radius: var(--hrt-size-radius-md);
+  padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2);
+  font-size: var(--hrt-size-font-body-sm);
+  margin-top: var(--hrt-size-spacing-2);
+  display: flex;
+  gap: var(--hrt-size-spacing-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ----------- Compact sticky header ----------- */
+.chead {
+  position: sticky;
+  top: 64px;
+  z-index: 30;
+  background: #fff;
+  box-shadow: var(--hrt-shadow-soft);
+  transform: translateY(-120%);
+  transition: transform var(--hrt-time-transition-fast) var(--hrt-ease-default);
+}
+.chead.show {
+  transform: translateY(0);
+}
+.chead__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--hrt-size-spacing-2);
+  min-height: 52px;
+}
+.chead__name {
+  font-weight: var(--hrt-font-weight-bold);
+  flex: 1;
+}
+
+/* ----------- Carousel / scroll ----------- */
+.carousel {
+  margin-top: var(--hrt-size-spacing-4);
+}
+.carousel__scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 80%;
+  gap: var(--hrt-size-spacing-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+@media (min-width: 768px) {
+  .carousel__scroll {
+    grid-auto-columns: 1fr;
+  }
+}
+.carousel__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ----------- Suns board — 4-per-row grid (CB-85) ----------- */
+/* Override the shared .markwall flex layout for the profile page.
+   Reference: 4 suns per row with label centred under each sun. */
+.maincol .markwall {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--hrt-size-spacing-3) var(--hrt-size-spacing-2);
+  align-items: end;
+}
+.maincol .markwall__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.maincol .markwall__cap {
+  text-align: center;
+  word-break: break-word;
+}
+
+/* ----------- Profile fundraiser carousel prev/next (CB-71/CB-85) ----------- */
+.profile-carousel {
+  position: relative;
+}
+.profile-carousel__track-wrap {
+  overflow: hidden;
+}
+.profile-carousel__track {
+  display: flex;
+  transition: transform 0.3s ease;
+  gap: var(--hrt-size-spacing-2);
+}
+.profile-carousel__track .fcard {
+  flex: 0 0 calc(80% - var(--hrt-size-spacing-1));
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .profile-carousel__track .fcard {
+    flex: 0 0 calc(50% - var(--hrt-size-spacing-1));
+  }
+}
+.profile-carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hrt-size-spacing-2);
+  margin-top: var(--hrt-size-spacing-2);
+}
+.profile-carousel__arrow {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+  box-shadow: var(--hrt-shadow-soft);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--hrt-color-text-default);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-carousel__arrow:hover {
+  background: #fff;
+}
+.profile-carousel__arrow:focus-visible {
+  outline: 2px solid var(--hrt-color-border-brand);
+  outline-offset: 2px;
+}
+.profile-carousel__dots {
+  display: flex;
+  gap: 6px;
+}
+.profile-carousel__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--hrt-color-border-neutral-extra-subtle);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+.profile-carousel__dot[aria-current="true"] {
+  background: var(--hrt-color-text-brand-strong);
+}
+.stateline {
+  font-size: var(--hrt-size-font-body-sm);
+  margin-top: var(--hrt-size-spacing-half);
+}
+.stateline--pos {
+  color: var(--hrt-color-text-positive);
+  font-weight: var(--hrt-font-weight-bold);
+}
+.stateline--near {
+  color: var(--hrt-color-text-default);
+  font-weight: var(--hrt-font-weight-bold);
+}
+
+/* ----------- Recurring nudge banner (P9) ----------- */
+.recbanner {
+  background: var(--hrt-color-surface-tip-subtle);
+  border: 1px solid var(--hrt-color-surface-tip-medium);
+  border-radius: var(--hrt-size-radius-lg);
+  padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3);
+  margin-top: var(--hrt-size-spacing-3);
+  display: flex;
+  gap: var(--hrt-size-spacing-2);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.recbanner__txt {
+  font-size: var(--hrt-size-font-body-sm);
+  color: var(--hrt-color-text-tip);
+  font-weight: var(--hrt-font-weight-bold);
+}
+
+/* ----------- Tab bar / panels ----------- */
+.tabbar-wrap {
+  margin-top: var(--hrt-size-spacing-4);
+}
+.tabpanel {
+  padding-block: var(--hrt-size-spacing-3);
+}
+.tabpanel[hidden] {
+  display: none;
+}
+
+/* ----------- Activity feed rows ----------- */
+.missed {
+  background: var(--hrt-color-surface-neutral-subtle);
+  border-bottom: 1px solid var(--hrt-color-border-neutral);
+  border-radius: var(--hrt-size-radius-md);
+  padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--hrt-size-font-body-sm);
+  font-weight: var(--hrt-font-weight-bold);
+}
+.arow {
+  background: #fff;
+  border: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+  border-radius: var(--hrt-size-radius-lg);
+  box-shadow: var(--hrt-shadow-soft);
+  padding: var(--hrt-size-spacing-2);
+  display: flex;
+  gap: var(--hrt-size-spacing-2);
+  margin-top: var(--hrt-size-spacing-2);
+}
+.arow__body {
+  flex: 1;
+}
+.verb {
+  font-size: var(--hrt-size-font-body-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hrt-color-text-supporting);
+  font-weight: var(--hrt-font-weight-bold);
+}
+.arow__title {
+  font-size: var(--hrt-size-font-body-sm);
+  font-weight: var(--hrt-font-weight-bold);
+  margin-top: 2px;
+}
+.arow__meta {
+  font-size: var(--hrt-size-font-body-xs);
+  color: var(--hrt-color-text-supporting);
+}
+.arow__cta {
+  color: var(--hrt-color-text-brand);
+  font-weight: var(--hrt-font-weight-bold);
+  font-size: var(--hrt-size-font-body-sm);
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* ----------- Digest link ----------- */
+.digestlink {
+  font-size: var(--hrt-size-font-body-sm);
+  color: var(--hrt-color-text-brand);
+  font-weight: var(--hrt-font-weight-bold);
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: var(--hrt-size-spacing-2);
+  cursor: pointer;
+}
+
+/* ----------- Right rail PYMK ----------- */
+.rightrail {
+  /* On mobile, hide right rail */
+}
+@media (max-width: 1023px) {
+  .rightrail {
+    display: none;
+  }
+}
+.pymkpanel {
+  background: #fff;
+  border: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+  border-radius: var(--hrt-size-radius-xxxl);
+  box-shadow: var(--hrt-shadow-medium);
+  padding: var(--hrt-size-spacing-3);
+}
+.pymkrow {
+  display: flex;
+  align-items: center;
+  gap: var(--hrt-size-spacing-2);
+  padding: var(--hrt-size-spacing-1) 0;
+}
+.pymkrow + .pymkrow {
+  border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+}
+.pymkrow__body {
+  flex: 1;
+}
+.pymkrow__name {
+  font-size: var(--hrt-size-font-body-sm);
+  font-weight: var(--hrt-font-weight-bold);
+}
+.pymkrow__prox {
+  font-size: var(--hrt-size-font-body-xs);
+  color: var(--hrt-color-text-supporting);
+}
+
+/* ----------- Digest modal ----------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(35, 35, 35, 0.6);
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--hrt-size-spacing-2);
+}
+.modal.open {
+  display: flex;
+}
+.email {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: var(--hrt-size-radius-xxxl);
+}
+.email__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3);
+  border-bottom: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+}
+.email__body {
+  padding: var(--hrt-size-spacing-3);
+}
+.email__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--hrt-color-text-brand);
+  font-weight: var(--hrt-font-weight-bold);
+}
+.email__logo .mark {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--hrt-size-radius-full);
+  background: var(--hrt-color-surface-brand);
+}
+.email__foot {
+  font-size: var(--hrt-size-font-body-xs);
+  color: var(--hrt-color-text-supporting);
+  border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+  padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3);
+}
+
+/* section-h is already defined in app/shared.css — no duplicate needed */

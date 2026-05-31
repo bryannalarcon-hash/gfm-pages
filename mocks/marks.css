@@ -1,0 +1,167 @@
+/* ============================================================================
+   v4.1 — Contribution Board ("Marks")
+   Every meaningful action leaves a mark; marks aggregate into one living scene.
+   Honors the locked guardrails (§3 of the brief):
+     • primitive = the GoFundMe logo (a fixed heart shape — a CSS mask, never a
+       drawing surface) → un-weaponizable
+     • placement is SYSTEM-controlled (bucket-fill; users never position) 
+     • Follow = presence (uncoloured, min size) · Share = colour (curated key
+       gradients only, NOT a free hex wheel) · Donate = size (sublinear + floor)
+     • show size, NEVER dollar figures · anonymous by default
+     • cold-start "be the first" state · text aggregate · reduced-motion safe
+   Built on gfm tokens. Lives beside v4.css (share-first).
+   ========================================================================== */
+
+/* ---- the mark primitive: GFM logo as a CSS mask, fillable with token colours ---- */
+.mark {
+  display: inline-block; width: 32px; height: 32px; flex: none;
+  background: var(--hrt-color-border-neutral); /* follow-only = uncoloured */
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.8 17a7.2 7.2 0 0 1 14.4 0z"/><rect x="10.85" y="2.4" width="2.3" height="6.2" rx="1.15"/><rect x="5.4" y="3.9" width="2.3" height="5.8" rx="1.15" transform="rotate(-24 6.55 6.8)"/><rect x="16.3" y="3.9" width="2.3" height="5.8" rx="1.15" transform="rotate(24 17.45 6.8)"/></svg>') center / contain no-repeat;
+  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.8 17a7.2 7.2 0 0 1 14.4 0z"/><rect x="10.85" y="2.4" width="2.3" height="6.2" rx="1.15"/><rect x="5.4" y="3.9" width="2.3" height="5.8" rx="1.15" transform="rotate(-24 6.55 6.8)"/><rect x="16.3" y="3.9" width="2.3" height="5.8" rx="1.15" transform="rotate(24 17.45 6.8)"/></svg>') center / contain no-repeat;
+}
+/* size tiers — sublinear, with a dignified floor (smallest is still clearly visible) */
+.mark--xs { width: 22px; height: 22px; }
+.mark--sm { width: 28px; height: 28px; }
+.mark--md { width: 40px; height: 40px; }
+.mark--lg { width: 54px; height: 54px; }
+.mark--xl { width: 68px; height: 68px; }
+/* curated "key gradients" (unlocked by sharing) — palette only, never free RGB */
+.mark--lime   { background: linear-gradient(135deg, #acf86c, #4a9d44); }
+.mark--gold   { background: linear-gradient(135deg, #ffd863, #f6a93b); }
+.mark--teal   { background: linear-gradient(135deg, #a7e3e3, #185b93); }
+.mark--violet { background: linear-gradient(135deg, #eccff6, #642878); }
+.mark--forest { background: linear-gradient(135deg, #4a9d44, #0b291a); }
+
+/* ---- the board (bucket-fill metaphor): marks settle at the bottom and fill toward goal ---- */
+.board { position: relative; background: var(--hrt-color-surface-brand-subtle); border-radius: var(--hrt-size-radius-xxxl); overflow: hidden; }
+.board__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--hrt-size-spacing-2); flex-wrap: wrap; padding: var(--hrt-size-spacing-3) var(--hrt-size-spacing-3) 0; }
+.board__count { font-size: var(--hrt-size-font-heading-md); font-weight: var(--hrt-font-weight-bold); }
+.board__count b { color: var(--hrt-color-text-brand-strong); }
+.board__sub { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); }
+.board__bucket { position: relative; min-height: 280px; display: flex; flex-wrap: wrap; align-content: flex-end; align-items: flex-end; justify-content: center; gap: 7px; padding: var(--hrt-size-spacing-3); }
+/* the "level" the bucket has filled to (toward goal) */
+.board__level { position: absolute; left: 0; right: 0; border-top: 2px dashed rgba(39,74,52,0.35); }
+.board__level span { position: absolute; right: var(--hrt-size-spacing-2); top: -10px; background: var(--hrt-color-surface-brand-subtle); padding: 0 var(--hrt-size-spacing-1); font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-brand-strong); }
+@media (prefers-reduced-motion: no-preference) {
+  .board__bucket .mark { animation: markrise 0.5s var(--hrt-ease-default) both; }
+}
+@keyframes markrise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.board__foot { padding: 0 var(--hrt-size-spacing-3) var(--hrt-size-spacing-3); display: flex; align-items: center; gap: var(--hrt-size-spacing-2); flex-wrap: wrap; }
+.board__legend { display: flex; gap: var(--hrt-size-spacing-2); flex-wrap: wrap; font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+.board__legend span { display: inline-flex; align-items: center; gap: 5px; }
+
+/* cold-start: never a dead grid */
+.board--empty .board__bucket { flex-direction: column; align-content: center; align-items: center; justify-content: center; text-align: center; gap: var(--hrt-size-spacing-2); }
+.board__spark { font-size: var(--hrt-size-font-heading-sm); font-weight: var(--hrt-font-weight-bold); }
+
+/* ---- creation window (greyed-until-unlocked + customize + consent + confirm) ---- */
+.create { background: #fff; border: 1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxxl); padding: var(--hrt-size-spacing-3); box-shadow: var(--hrt-shadow-soft); }
+.create__btn[disabled] { background: var(--hrt-color-surface-neutral-medium); color: var(--hrt-color-text-disabled); cursor: not-allowed; }
+.avenue { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); padding: var(--hrt-size-spacing-2); border-radius: var(--hrt-size-radius-lg); background: var(--hrt-color-surface-neutral-subtle); margin-top: var(--hrt-size-spacing-1); }
+.avenue__ic { width: 36px; height: 36px; border-radius: var(--hrt-size-radius-full); display: flex; align-items: center; justify-content: center; background: #fff; color: var(--hrt-color-text-supporting); flex: none; }
+.avenue__ic svg { width: 18px; height: 18px; fill: currentColor; }
+.avenue__t { flex: 1; font-size: var(--hrt-size-font-body-sm); }
+.avenue__t b { display: block; }
+.avenue__state { font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-supporting); }
+.avenue--done { background: var(--hrt-color-surface-brand-subtle); }
+.avenue--done .avenue__ic { background: var(--hrt-color-surface-brand-medium); color: var(--hrt-color-text-brand-strong); }
+.avenue--done .avenue__state { color: var(--hrt-color-text-brand-strong); }
+
+.gradrow { display: flex; gap: var(--hrt-size-spacing-2); flex-wrap: wrap; margin-top: var(--hrt-size-spacing-1); }
+.gradsw { width: 44px; height: 44px; border-radius: var(--hrt-size-radius-full); border: 2px solid transparent; cursor: pointer; }
+.gradsw[aria-pressed="true"] { border-color: var(--hrt-color-text-default); box-shadow: 0 0 0 2px #fff inset; }
+.gradsw--locked { opacity: 0.4; cursor: not-allowed; }
+
+.consent { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); }
+.consent input { width: 18px; height: 18px; accent-color: var(--hrt-color-surface-brand); }
+.create__preview { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-2); }
+
+/* "you left a mark" confirmation + "your mark grew" return note */
+.markmsg { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); background: var(--hrt-color-surface-brand-subtle); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3); }
+.markmsg__t { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-brand-strong); }
+.markmsg__s { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+
+/* profile = your marks collection */
+.markwall { display: flex; flex-wrap: wrap; gap: var(--hrt-size-spacing-2); align-items: flex-end; }
+.markwall__item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.markwall__cap { font-size: 10px; color: var(--hrt-color-text-supporting); font-family: var(--hrt-font-family-mono); }
+
+/* ---- v4.2 ambient marks background: physics layer in the side gutters ----
+   Page background moved to <html>, <body> transparent, so the negative-z marks
+   layer paints ABOVE the page background but BELOW content. */
+html { background: var(--hrt-color-surface-default); }
+body { background: transparent; }
+.marks-bg { position: absolute; left: 0; top: 0; width: 100%; z-index: -1; pointer-events: none; overflow: hidden; opacity: 0.95; }
+body[data-mode="before"] .marks-bg { display: none; }
+.marks-bg .mark { position: absolute; top: 0; left: 0; will-change: transform; }
+/* letter sits centred on the dome (half-circle) of the sun logo */
+.mark__l { position: absolute; left: 50%; top: 60%; transform: translate(-50%, -50%); font-family: var(--hrt-font-family); font-weight: var(--hrt-font-weight-bold); color: rgba(11,41,26,0.62); line-height: 1; }
+.mark--violet .mark__l, .mark--forest .mark__l { color: rgba(255,255,255,0.9); }
+
+/* the viewer's own sun, highlighted in the pile */
+.mark--mine { z-index: 2; }
+.sun-ring { position: absolute; border-radius: 50%; border: 3px solid var(--hrt-color-surface-brand); box-shadow: 0 0 0 4px rgba(74,157,68,0.18); z-index: 1; }
+.sun-you { position: absolute; transform: translateX(-50%) translateY(-100%); background: var(--hrt-color-surface-brand-strong); color: #fff; font-size: 10px; font-weight: var(--hrt-font-weight-bold); padding: 2px 7px; border-radius: var(--hrt-size-radius-full); white-space: nowrap; z-index: 2; }
+
+/* creation screen (modal) */
+.suncreate { position: fixed; inset: 0; z-index: 1100; background: rgba(11,41,26,0.55); display: none; align-items: flex-end; justify-content: center; }
+@media (min-width: 640px) { .suncreate { align-items: center; } }
+.suncreate.open { display: flex; }
+.suncreate__panel { background: #fff; width: 100%; max-width: 460px; max-height: 92vh; overflow: auto; border-radius: var(--hrt-size-radius-xxxl) var(--hrt-size-radius-xxxl) 0 0; padding: var(--hrt-size-spacing-3); }
+@media (min-width: 640px) { .suncreate__panel { border-radius: var(--hrt-size-radius-xxxl); } }
+.suncreate__bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--hrt-size-spacing-2); }
+.suncreate__bar h3 { margin: 0; font-size: var(--hrt-size-font-heading-md); font-weight: var(--hrt-font-weight-bold); }
+.suncreate__x { border: none; background: none; font-size: 22px; color: var(--hrt-color-text-supporting); }
+
+/* temporary congratulations ribbon that drops from the top */
+.sun-ribbon { position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-130%); z-index: 1200; display: inline-flex; align-items: center; gap: var(--hrt-size-spacing-1); background: var(--hrt-color-surface-brand-strong); color: #fff; font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-3); border-radius: 0 0 var(--hrt-size-radius-lg) var(--hrt-size-radius-lg); box-shadow: var(--hrt-shadow-medium); transition: transform 0.45s var(--hrt-ease-default); max-width: calc(100vw - var(--hrt-size-spacing-4)); }
+.sun-ribbon.show { transform: translateX(-50%) translateY(0); }
+.sun-ribbon__em { color: #acf86c; }
+
+/* animated legend demos: shared = colour-shift + wobble; gave = gradient-shift + bigger wobble */
+.sun-demo--share { animation: sunColor 6s steps(1, end) infinite, sunWob 2.2s ease-in-out infinite; }
+.sun-demo--give  { animation: sunGrad 5s steps(1, end) infinite, sunWobBig 2.6s ease-in-out infinite; }
+@keyframes sunColor {
+  0%   { background: linear-gradient(135deg, #acf86c, #4a9d44); }
+  33%  { background: linear-gradient(135deg, #a7e3e3, #185b93); }
+  66%  { background: linear-gradient(135deg, #ffd863, #f6a93b); }
+}
+@keyframes sunGrad {
+  0%   { background: linear-gradient(135deg, #b6ff5c, #0b5d2e); }
+  20%  { background: linear-gradient(135deg, #ffd000, #b01509); }
+  40%  { background: linear-gradient(135deg, #00e0d0, #0b2c93); }
+  60%  { background: linear-gradient(135deg, #ff8be8, #642878); }
+  80%  { background: linear-gradient(135deg, #ff7a18, #0b291a); }
+}
+@keyframes sunWob    { 0%,100% { transform: scale(1); } 50% { transform: scale(1.22); } }
+@keyframes sunWobBig { 0%,100% { transform: scale(1.05); } 50% { transform: scale(1.5); } }
+@media (prefers-reduced-motion: reduce) { .sun-demo--share, .sun-demo--give { animation: none; } }
+/* live control panel (bottom-centre, between the Before/After + persona pills) */
+.marks-panel { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(var(--hrt-size-spacing-1), env(safe-area-inset-bottom)); z-index: 1000; display: flex; align-items: center; gap: var(--hrt-size-spacing-2); background: #fff; border: 1px solid var(--hrt-color-border-neutral); border-radius: var(--hrt-size-radius-full); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); }
+.marks-panel__h { display: inline-flex; align-items: center; gap: 5px; font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-brand-strong); }
+.marks-panel__h svg { fill: var(--hrt-color-icon-brand); }
+.marks-panel__row { display: flex; align-items: center; gap: 6px; font-size: var(--hrt-size-font-body-xs); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-supporting); }
+.marks-panel__row input[type=range] { width: 84px; accent-color: var(--hrt-color-surface-brand); }
+@media (max-width: 700px) { .marks-panel { display: none; } }
+/* cascade-in fall (accelerating drop + small bounce) */
+.marks-bg .mark--fall { animation: markfall 0.9s cubic-bezier(0.5, 0, 0.85, 0.4) both; }
+@keyframes markfall {
+  0% { transform: translateY(var(--fall, -400px)); }
+  72% { transform: translateY(0); }
+  84% { transform: translateY(-7px); }
+  100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) { .marks-bg .mark--fall { animation: none; } }
+
+/* minimized marks intro strip (replaces the dedicated board) */
+.marks-intro { display: flex; align-items: center; gap: var(--hrt-size-spacing-3); background: var(--hrt-color-surface-brand-subtle); border-radius: var(--hrt-size-radius-xxl); padding: var(--hrt-size-spacing-3); flex-wrap: wrap; }
+.marks-intro__txt { flex: 1; min-width: 220px; }
+.marks-intro__h { font-size: var(--hrt-size-font-heading-sm); font-weight: var(--hrt-font-weight-bold); }
+.marks-intro__p { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-strong); margin: var(--hrt-size-spacing-half) 0; }
+.marks-intro .board__legend { margin-top: var(--hrt-size-spacing-1); }
+.marks-intro__btn[disabled] { background: var(--hrt-color-surface-neutral-medium); color: var(--hrt-color-text-disabled); cursor: not-allowed; flex: none; }
+
+/* v4.2 persistent donate bar (under the global nav) */
+.donatebar { position: sticky; top: 64px; z-index: 30; background: #fff; border-bottom: 1px solid var(--hrt-color-border-neutral-extra-subtle); box-shadow: var(--hrt-shadow-soft); }
+.donatebar__in { display: flex; align-items: center; gap: var(--hrt-size-spacing-2); min-height: 52px; }
+.donatebar__meta { flex: 1; font-size: var(--hrt-size-font-body-sm); }

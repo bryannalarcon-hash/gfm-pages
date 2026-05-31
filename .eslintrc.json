@@ -1,0 +1,25 @@
+{
+  "extends": "next/core-web-vitals",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/no-unescaped-entities": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["**/lib/llm/batch", "@/lib/llm/batch"],
+            "message": "No real-time LLM on the request path. lib/llm/batch.ts is batch/worker-only — pages and components must read precomputed share_copy / update_summary rows from the DB instead. (coder-spec.md §5.4)"
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["db/**", "lib/llm/**", "scripts/**", "tests/**"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ]
+}

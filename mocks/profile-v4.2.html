@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Profile (v4.2 · suns collection) — Janahan Selvarajah</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="shared.css" />
+<link rel="stylesheet" href="overlay.css" />
+<link rel="stylesheet" href="before.css" />
+<link rel="stylesheet" href="v4.css" />
+<link rel="stylesheet" href="marks.css" />
+<style>
+  .layout { display:grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-4); padding-block: var(--hrt-size-spacing-3); }
+  @media (min-width:1024px){ .layout { grid-template-columns: minmax(0,1fr) 336px; align-items:start; } }
+
+  .hero { background: linear-gradient(180deg, var(--hrt-color-surface-brand-subtle), var(--hrt-color-surface-default)); border-radius: var(--hrt-size-radius-xxxl); padding: var(--hrt-size-spacing-4) var(--hrt-size-spacing-3) var(--hrt-size-spacing-3); }
+  .hero__row { display:flex; gap: var(--hrt-size-spacing-3); align-items:flex-start; }
+  @media (max-width:560px){ .hero__row { flex-direction: column; align-items:center; text-align:center; } }
+  .hero__name { font-size: var(--hrt-size-font-heading-lg); font-weight: var(--hrt-font-weight-bold); letter-spacing: var(--hrt-letter-spacing-tight); margin:0; }
+  .counts { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-half); }
+  .counts strong { color: var(--hrt-color-text-default); }
+  .hero__cta { display:flex; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-2); flex-wrap: wrap; }
+  .followmicro { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-1); }
+  .causes { display:flex; gap: var(--hrt-size-spacing-1); flex-wrap: wrap; margin-top: var(--hrt-size-spacing-2); }
+  @media (max-width:560px){ .causes { justify-content:center; } }
+  .tenure { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-2); }
+  .bionudge { background: var(--hrt-color-surface-informative-medium); color: var(--hrt-color-text-informative); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); margin-top: var(--hrt-size-spacing-2); display:flex; gap: var(--hrt-size-spacing-2); align-items:center; flex-wrap:wrap; }
+
+  .chead { position: sticky; top: 64px; z-index: 30; background:#fff; box-shadow: var(--hrt-shadow-soft); transform: translateY(-120%); transition: transform var(--hrt-time-transition-fast) var(--hrt-ease-default); }
+  .chead.show { transform: translateY(0); }
+  .chead__inner { display:flex; align-items:center; gap: var(--hrt-size-spacing-2); min-height:52px; }
+  .chead__name { font-weight: var(--hrt-font-weight-bold); flex:1; }
+
+  .carousel { margin-top: var(--hrt-size-spacing-4); }
+  .carousel__scroll { display:grid; grid-auto-flow: column; grid-auto-columns: 80%; gap: var(--hrt-size-spacing-2); overflow-x:auto; scrollbar-width:none; }
+  @media (min-width:768px){ .carousel__scroll { grid-auto-columns: 1fr; } }
+  .carousel__scroll::-webkit-scrollbar { display:none; }
+  .stateline { font-size: var(--hrt-size-font-body-sm); margin-top: var(--hrt-size-spacing-half); }
+  .stateline--pos { color: var(--hrt-color-text-positive); font-weight: var(--hrt-font-weight-bold); }
+  .stateline--near { color: var(--hrt-color-text-default); font-weight: var(--hrt-font-weight-bold); }
+
+  /* P9 recurring nudge */
+  .recbanner { background: var(--hrt-color-surface-tip-subtle); border: 1px solid var(--hrt-color-surface-tip-medium); border-radius: var(--hrt-size-radius-lg); padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3); margin-top: var(--hrt-size-spacing-3); display:flex; gap: var(--hrt-size-spacing-2); align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .recbanner__txt { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-tip); font-weight: var(--hrt-font-weight-bold); }
+
+  .tabbar-wrap { margin-top: var(--hrt-size-spacing-4); }
+  .tabpanel { padding-block: var(--hrt-size-spacing-3); }
+  .tabpanel[hidden]{ display:none; }
+
+  /* activity feed */
+  .missed { background: var(--hrt-color-surface-neutral-subtle); border-bottom: 1px solid var(--hrt-color-border-neutral); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); display:flex; align-items:center; justify-content:space-between; font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); }
+  .arow { background:#fff; border:1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-lg); box-shadow: var(--hrt-shadow-soft); padding: var(--hrt-size-spacing-2); display:flex; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-2); }
+  .arow__body { flex:1; }
+  .verb { font-size: var(--hrt-size-font-body-xs); text-transform: uppercase; letter-spacing: 0.04em; color: var(--hrt-color-text-supporting); font-weight: var(--hrt-font-weight-bold); }
+  .arow__title { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); margin-top: 2px; }
+  .arow__meta { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+  .arow__cta { color: var(--hrt-color-text-brand); font-weight: var(--hrt-font-weight-bold); font-size: var(--hrt-size-font-body-sm); white-space:nowrap; align-self:center; }
+
+  .digestlink { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-brand); font-weight: var(--hrt-font-weight-bold); background:none; border:none; padding:0; margin-top: var(--hrt-size-spacing-2); }
+
+  /* right-rail PYMK */
+  .pymkpanel { background:#fff; border:1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxxl); box-shadow: var(--hrt-shadow-medium); padding: var(--hrt-size-spacing-3); }
+  @media (max-width:1023px){ .rightrail { display:none; } }
+  .pymkrow { display:flex; align-items:center; gap: var(--hrt-size-spacing-2); padding: var(--hrt-size-spacing-1) 0; }
+  .pymkrow + .pymkrow { border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle); }
+  .pymkrow__body { flex:1; }
+  .pymkrow__name { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); }
+  .pymkrow__prox { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+
+  /* digest modal */
+  .modal { position: fixed; inset:0; background: rgba(35,35,35,0.6); z-index:70; display:none; align-items:center; justify-content:center; padding: var(--hrt-size-spacing-2); }
+  .modal.open { display:flex; }
+  .email { background:#fff; width:100%; max-width: 480px; max-height:90vh; overflow:auto; border-radius: var(--hrt-size-radius-xxxl); }
+  .email__bar { display:flex; justify-content:space-between; align-items:center; padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3); border-bottom: 1px solid var(--hrt-color-border-neutral-extra-subtle); }
+  .email__body { padding: var(--hrt-size-spacing-3); }
+  .email__logo { display:inline-flex; align-items:center; gap:6px; color: var(--hrt-color-text-brand); font-weight: var(--hrt-font-weight-bold); }
+  .email__logo .mark { width:22px; height:22px; border-radius: var(--hrt-size-radius-full); background: var(--hrt-color-surface-brand); }
+  .email__foot { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); border-top:1px solid var(--hrt-color-border-neutral-extra-subtle); padding: var(--hrt-size-spacing-2) var(--hrt-size-spacing-3); }
+</style>
+</head>
+<body class="v4-page" data-screen-label="Profile page">
+
+<!-- ============================ GLOBAL NAV (KEEP AS-IS) ============================ -->
+<header class="gnav">
+  <div class="hrt-container xl gnav__inner">
+    <a class="gnav__logo" href="fundraiser.html"><span class="mark"><svg width="16" height="16"><use href="#i-heart"/></svg></span> gofundme</a>
+    <span class="gnav__search"><svg width="16" height="16"><use href="#i-search"/></svg> Search</span>
+    <nav class="gnav__links"><a href="#">Donate</a><a href="#">Fundraise</a><a href="#">About</a></nav>
+    <span class="gnav__spacer"></span>
+    <button class="gnav__hamburger" aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
+  </div>
+</header>
+
+<!-- sticky scroll header -->
+<div class="chead" id="chead" data-after-only>
+  <div class="hrt-container xl chead__inner">
+    <span class="avatar avatar--sm">JS</span>
+    <span class="chead__name">Janahan Selvarajah</span>
+    <button class="btn btn--primary btn--sm js-follow" data-show="anonymous close_friend extrovert shared_by_extro returning_lapsed">Follow</button>
+    <button class="btn btn--secondary btn--sm">Share</button>
+  </div>
+</div>
+
+<div class="after-view">
+<main class="hrt-container xl layout">
+  <div class="maincol">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" data-screen-label="Hero">
+      <div class="hero__row">
+        <span class="avatar avatar--xxxl">JS</span>
+        <div style="flex:1">
+          <h1 class="hero__name">Janahan Selvarajah</h1>
+          <div class="counts"><strong>142</strong> followers · <strong>38</strong> following</div>
+
+          <div class="hero__cta">
+            <!-- P1 · Follow (PRIMARY on profile — Follow IS the page's primary action). State per persona. -->
+            <button class="btn btn--primary js-follow" data-show="anonymous close_friend extrovert shared_by_extro"
+              data-overlay-tier="2" data-overlay-delta="P1"
+              data-overlay-events="Follow Clicked"
+              data-overlay-metric="Follow + value-prop microcopy"
+              data-overlay-why="Value-prop line under Follow makes the benefit explicit. Maher 2012: social-tie retention ~2×. The downstream feed (P2) is the multiplier. GFM platformizing the social graph backend."
+              data-overlay-dashboard="Follow rate">Follow</button>
+            <button class="btn btn--following js-follow hidden" data-show="returning_lapsed"
+              data-overlay-tier="2" data-overlay-delta="P1"
+              data-overlay-events="Follow Clicked"
+              data-overlay-metric="Follow — already following"
+              data-overlay-why="Priya follows Janahan; the digest + 'What you missed' feed pull her back."
+              data-overlay-dashboard="Follow rate"><svg width="18" height="18"><use href="#i-check"/></svg> Following</button>
+
+            <!-- P8 · Share with AI per-channel copy -->
+            <button class="btn btn--secondary js-share"
+              data-overlay-tier="2" data-overlay-delta="P8"
+              data-overlay-events="Profile Share Clicked, share_channel"
+              data-overlay-metric="AI per-channel profile share copy"
+              data-overlay-why="LLM copy per (profile, channel), cached. Low-volume but high-trust acquisition channel. GFM runs amp24_agentic_share_text_ab + amp25_sharehub_v2_ab live."
+              data-overlay-dashboard="Share / K-factor">Share profile</button>
+
+            <!-- owner state: no Follow CTA -->
+            <span class="pill pill--neutral" data-show="profile_owner">This is your profile</span>
+            <button class="btn btn--secondary btn--sm" data-show="profile_owner">Edit profile</button>
+          </div>
+
+          <!-- P1 microcopy variants -->
+          <div class="followmicro" data-after-only data-show="anonymous close_friend extrovert shared_by_extro">Get updates when Janahan organizes or donates.</div>
+          <div class="followmicro" data-after-only data-show="returning_lapsed">Following — you’ll hear about new activity.</div>
+
+          <!-- P3 · cause pills relocated into hero (max 3; row collapses if none) -->
+          <div class="causes" data-after-only
+            data-overlay-tier="1" data-overlay-delta="P3"
+            data-overlay-events="Follow Clicked (cohort: saw cause pills)"
+            data-overlay-metric="Cause pills in hero — identity legibility"
+            data-overlay-why="Surfaces existing causes[] from the data model at a glance (was buried in About). Identity legibility plausibly lifts follow trust (Maher 2012: the cause is the tie). For owners, pairs with the complete-profile wizard."
+            data-overlay-dashboard="Follow rate">
+            <span class="pill pill--cause">Animals</span>
+            <span class="pill pill--cause">Environment</span>
+            <span class="pill pill--cause">Arts &amp; Culture</span>
+          </div>
+
+          <!-- P6 · repeat-organizer tenure (trust signal; 2+ fundraisers) -->
+          <div class="tenure" data-after-only
+            data-overlay-tier="2" data-overlay-delta="P6"
+            data-overlay-events="Donate Completed (referrer=profile, organizer_fundraiser_count≥2)"
+            data-overlay-metric="Repeat-organizer tenure badge (trust signal)"
+            data-overlay-why="Blackbaud P2P: returning organizers raise $501 median vs $222 first-timers. Surfacing tenure gives a quality signal before click-through. Supports P5; honest framing — downstream donate, not follow."
+            data-overlay-dashboard="Donate Funnel">Organizing on GoFundMe since 2015 · 3 fundraisers</div>
+
+          <!-- P3 · bio nudge (owner-only) -->
+          <div class="bionudge" data-after-only data-show="profile_owner"
+            data-overlay-tier="1" data-overlay-delta="P3"
+            data-overlay-events="Profile Completion Step Completed"
+            data-overlay-metric="Complete-profile nudge (owner)"
+            data-overlay-why="The fe-ssr-public-profiles-complete-profile-steps treatment is active. Owner-only prompt drives bio-fill rate so the hero never looks abandoned."
+            data-overlay-dashboard="Profile completion">
+            <span>Add a bio to help followers know what you stand for.</span>
+            <button class="btn btn--secondary btn--sm">Complete profile →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHARE ENGINE moved below fundraisers + suns (profile: fundraisers & suns rank above shares) -->
+
+    <!-- ===================== v4.1 · MARKS COLLECTION (contribution identity across causes) ===================== -->
+    <section class="carousel" data-screen-label="Marks collection">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-1)">Suns across causes</h2>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-sm); margin:0 0 var(--hrt-size-spacing-3)">Every cause Janahan has shown up for lights a sun here — a contribution identity that grows over time.</p>
+      <div class="markwall"
+        data-overlay-tier="2" data-overlay-delta="v4.1 · marks collection"
+        data-overlay-events="Board Viewed, Mark Clicked"
+        data-overlay-metric="Repeat Visits — contribution identity"
+        data-overlay-why="The profile is your wall of marks across every cause — a personal collection that grows as you act, giving you a reason to return and watch it fill. The public, emotional twin of the dashboard.">
+        <div class="markwall__item"><span class="mark mark--xl mark--gold"></span><span class="markwall__cap">Watch Duty</span></div>
+        <div class="markwall__item"><span class="mark mark--lg mark--forest"></span><span class="markwall__cap">Saving Eliza</span></div>
+        <div class="markwall__item"><span class="mark mark--lg mark--lime"></span><span class="markwall__cap">Keep Sandy</span></div>
+        <div class="markwall__item"><span class="mark mark--md mark--teal"></span><span class="markwall__cap">Andy Ritchie</span></div>
+        <div class="markwall__item"><span class="mark mark--md mark--violet"></span><span class="markwall__cap">Reef Project</span></div>
+        <div class="markwall__item"><span class="mark mark--sm mark--lime"></span><span class="markwall__cap">Food Bank</span></div>
+        <div class="markwall__item"><span class="mark mark--sm mark--gold"></span><span class="markwall__cap">Library</span></div>
+        <div class="markwall__item"><span class="mark mark--sm"></span><span class="markwall__cap">following</span></div>
+        <div class="markwall__item"><span class="mark mark--md mark--teal"></span><span class="markwall__cap">Clean Air</span></div>
+        <div class="markwall__item"><span class="mark mark--xs"></span><span class="markwall__cap">following</span></div>
+      </div>
+      <p class="muted" style="font-size:var(--hrt-size-font-body-xs); margin-top:var(--hrt-size-spacing-2)">Size = how much he gave (never a dollar figure) · colour = causes he shared · grey = followed</p>
+    </section>
+
+    <!-- ===================== P5 · CAROUSEL ===================== -->
+    <section class="carousel" data-screen-label="Fundraiser carousel">
+      <h2 class="section-h" style="margin-bottom: var(--hrt-size-spacing-2)">Fundraisers by Janahan</h2>
+      <div class="carousel__scroll"
+        data-overlay-tier="1" data-overlay-delta="P5"
+        data-overlay-events="Fundraiser Card Clicked, card_state, referrer_source=profile"
+        data-overlay-metric="Carousel state-aware copy (goal-gradient)"
+        data-overlay-why="One state line per card (over-goal / near-goal / default). Cryder 2013 goal-gradient at the profile level. Drives click-through to near/over-goal fundraisers; emits referrer_source=profile."
+        data-overlay-dashboard="Donate Funnel">
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Keep Sandy on Ossabaw</div><div class="goalbar"><div class="goalbar__fill" style="width:100%"></div></div><div class="fcard__meta">102% · $12,450 raised</div><div class="stateline stateline--pos" data-after-only>Goal reached — still accepting donations</div></div></div>
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Saving Eliza</div><div class="goalbar"><div class="goalbar__fill" style="width:52%"></div></div><div class="fcard__meta">52% · $5,200 raised</div><div class="stateline stateline--near" data-after-only>$4,800 to go</div></div></div>
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Andy Ritchie Recovery</div><div class="goalbar"><div class="goalbar__fill" style="width:100%"></div></div><div class="fcard__meta">102% · $8,100 raised</div><div class="stateline stateline--pos" data-after-only>Goal reached — still accepting donations</div></div></div>
+      </div>
+    </section>
+
+    <!-- ===================== SHARE ENGINE — below fundraisers + suns (profile ranks those above shares) ===================== -->
+    <section class="spread" data-screen-label="Intro studio"
+      data-overlay-tier="2" data-overlay-delta="v4 · profile share studio (P8)"
+      data-overlay-events="Profile Share Clicked, share_channel, share_context=studio"
+      data-overlay-metric="Share — per-channel intro studio"
+      data-overlay-why="Profiles spread through people who vouch for them — a low-volume, high-trust channel. Placed below fundraisers + suns per the profile ranking. Congrats now drops as a temporary ribbon on share."
+      data-overlay-dashboard="Share / K-factor">
+      <div class="spread__eyebrow">A warm intro goes far</div>
+      <h2 class="spread__head">Introduce Janahan</h2>
+      <p class="spread__sub">Send a ready-made intro to someone who’d care about these causes.</p>
+      <div class="studio">
+        <div class="scard">
+          <div class="scard__head"><span class="chip" style="background:#e7fce3;color:#1f8a4c"><svg><use href="#i-whatsapp"/></svg></span> WhatsApp <span class="scard__tone">· friend tone</span></div>
+          <div class="bubble bubble--wa">You should follow Janahan on GoFundMe — he’s organized 3 fundraisers for animals and the environment since 2015. Good people. 👇</div>
+          <button class="btn btn--primary btn--sm js-share">Send on WhatsApp</button>
+        </div>
+        <div class="scard">
+          <div class="scard__head"><span class="chip"><svg><use href="#i-email"/></svg></span> Email <span class="scard__tone">· personal note</span></div>
+          <div class="bubble">I wanted to introduce you to Janahan — he’s been quietly organizing fundraisers for causes I think you’d care about. Here’s his profile…</div>
+          <button class="btn btn--primary btn--sm js-share">Compose email</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== P9 · RECURRING NUDGE BANNER =====================
+         Production rule: SHOW for authenticated viewer with 2+ donations to this
+         organizer in the past 12 months; collapses to zero otherwise.
+         DEMO: populated state shown for close_friend / returning_lapsed so the
+         design is reviewable (their fixtures don't meet the threshold in prod). -->
+    <div class="recbanner" data-after-only data-show="close_friend returning_lapsed"
+      data-overlay-tier="1" data-overlay-delta="P9"
+      data-overlay-events="Recurring Nudge Viewed, Recurring Nudge Clicked"
+      data-overlay-metric="Organizer-level recurring nudge"
+      data-overlay-why="Profile is the only surface that knows 'you've given X times to this person.' Recurring donors ~10–20× LTV. GFM runs 4 live recurring_* experiments (none on profile). CTA opens donate flow with frequency=monthly; fundraiser D12 skips its redundant nudge.">
+      <span class="recbanner__txt">You’ve supported Janahan 3 times — consider a monthly gift?</span>
+      <a class="btn btn--primary btn--sm" href="fundraiser.html">Set up recurring →</a>
+    </div>
+
+    <!-- ===================== TABS ===================== -->
+    <div class="tabbar-wrap">
+      <div class="tabbar" role="tablist">
+        <button class="tabbar__tab" role="tab" aria-selected="true" data-tab="activity">Activity</button>
+        <button class="tabbar__tab" role="tab" aria-selected="false" data-tab="about">About</button>
+      </div>
+    </div>
+
+    <!-- ACTIVITY TAB -->
+    <section class="tabpanel" id="tab-activity" role="tabpanel" data-screen-label="Activity tab"
+      data-overlay-tier="2" data-overlay-delta="P2"
+      data-overlay-events="Activity Feed Engaged, Activity Item Clicked, Digest Email Opened"
+      data-overlay-metric="“What you missed” feed + weekly digest"
+      data-overlay-why="Feed schema adds the UPDATED verb so followed-fundraiser updates have a home (closes the D5→P2 gap). 'Since your last visit' groups new items. Weekly Braze digest is the pull-back. Primary Repeat Visits lever — closes the follow loop.">
+      <!-- P2 · "Since your last visit" header (returners who follow). Owner: feed without 'what you missed' framing. -->
+      <div class="missed" data-after-only data-show="returning_lapsed">
+        <span>Since your last visit — 4 new</span>
+        <button class="react"><svg width="18" height="18"><use href="#i-chevron"/></svg></button>
+      </div>
+
+      <!-- UPDATED rows (viewer follows a fundraiser with a new update) — returners only -->
+      <div class="arow" data-after-only data-show="returning_lapsed">
+        <span class="avatar avatar--sm">RA</span>
+        <div class="arow__body"><div class="verb">Updated</div><div class="arow__title">Real-Time Alerts for Wildfire Safety posted an update</div><div class="arow__meta">by Watch Duty · 4 days ago</div></div>
+        <a class="arow__cta" href="fundraiser.html">View →</a>
+      </div>
+
+      <!-- PUBLISHED / DONATED rows — always shown for all viewers -->
+      <div class="arow" data-show="all">
+        <span class="avatar avatar--sm">JS</span>
+        <div class="arow__body"><div class="verb">Published</div><div class="arow__title">Janahan started “Save the Park at Ossabaw Island”</div><div class="arow__meta">6 days ago</div></div>
+        <a class="arow__cta" href="fundraiser.html">View →</a>
+      </div>
+      <div class="arow" data-after-only data-show="returning_lapsed">
+        <span class="avatar avatar--sm">AR</span>
+        <div class="arow__body"><div class="verb">Updated</div><div class="arow__title">Andy Ritchie’s Recovery Fund posted an update</div><div class="arow__meta">by Jane R. · 7 days ago</div></div>
+        <a class="arow__cta" href="fundraiser.html">View →</a>
+      </div>
+      <div class="arow" data-show="all">
+        <span class="avatar avatar--sm">JS</span>
+        <div class="arow__body"><div class="verb">Donated</div><div class="arow__title">Janahan donated $50 to “Keep Sandy on Ossabaw”</div><div class="arow__meta">2 weeks ago</div></div>
+        <a class="arow__cta" href="fundraiser.html">View →</a>
+      </div>
+
+      <button class="digestlink js-digest" data-after-only>Preview the weekly digest email →</button>
+    </section>
+
+    <!-- ABOUT TAB (KEEP AS-IS; cause pills removed — relocated to hero per P3) -->
+    <section class="tabpanel" id="tab-about" role="tabpanel" hidden data-screen-label="About tab">
+      <h3 class="section-h" style="margin-bottom: var(--hrt-size-spacing-1)">Bio</h3>
+      <p style="margin:0">Passionate about animal welfare and protecting wild places. Organizing fundraisers for causes close to home since 2015.</p>
+      <h3 class="section-h" style="margin: var(--hrt-size-spacing-3) 0 var(--hrt-size-spacing-1)">Joined GoFundMe</h3>
+      <p class="muted" style="margin:0; font-size: var(--hrt-size-font-body-sm)">August 2015</p>
+      <!-- Cause pills intentionally NOT here — relocated to hero (P3). Do not duplicate. -->
+    </section>
+  </div>
+
+  <!-- ===================== RIGHT RAIL · PYMK PANEL (P4) ===================== -->
+  <aside class="rightrail">
+    <div class="pymkpanel"
+      data-overlay-tier="2" data-overlay-delta="P4"
+      data-overlay-events="PYMK Follow Clicked, pymk_rank_position"
+      data-overlay-metric="PYMK panel ranked by graph proximity"
+      data-overlay-why="Authenticated viewers: reorder the 20 suggestions by second-degree proximity (people followed by accounts you follow rank first). Anonymous: server default. GFM owns social_graph_second_connection_lookup. Each new edge compounds."
+      data-overlay-dashboard="Follow rate">
+      <div class="section-h" style="font-size: var(--hrt-size-font-heading-xs); margin-bottom: var(--hrt-size-spacing-2)">People you may know</div>
+      <div class="pymkrow"><span class="avatar avatar--sm">SM</span><div class="pymkrow__body"><div class="pymkrow__name">Sarah M.</div><div class="pymkrow__prox" data-show="close_friend extrovert returning_lapsed profile_owner">2nd connection</div></div><button class="btn btn--secondary btn--sm js-pfollow">Follow</button></div>
+      <div class="pymkrow"><span class="avatar avatar--sm">TK</span><div class="pymkrow__body"><div class="pymkrow__name">Tom K.</div><div class="pymkrow__prox" data-show="close_friend extrovert returning_lapsed profile_owner">2nd connection</div></div><button class="btn btn--secondary btn--sm js-pfollow">Follow</button></div>
+      <div class="pymkrow"><span class="avatar avatar--sm">RP</span><div class="pymkrow__body"><div class="pymkrow__name">Raj P.</div><div class="pymkrow__prox" data-show="close_friend extrovert returning_lapsed profile_owner">Followed by 3 you follow</div></div><button class="btn btn--secondary btn--sm js-pfollow">Follow</button></div>
+      <div class="pymkrow"><span class="avatar avatar--sm">LN</span><div class="pymkrow__body"><div class="pymkrow__name">Lena N.</div><div class="pymkrow__prox" data-show="close_friend extrovert returning_lapsed profile_owner">2nd connection</div></div><button class="btn btn--secondary btn--sm js-pfollow">Follow</button></div>
+      <div style="margin-top: var(--hrt-size-spacing-2)"><button class="btn btn--secondary btn--sm btn--block">See more</button></div>
+    </div>
+  </aside>
+</main>
+</div><!-- /after-view -->
+
+<!-- ============================ BEFORE · current GoFundMe profile (recreation of live site) ============================ -->
+<div class="before-view">
+  <div class="bf">
+    <div class="bf-pcard">
+      <div class="bf-pcover">
+        <span class="avatar avatar--xxxl">JV</span>
+      </div>
+      <div class="bf-pright">
+        <h1 class="bf-pname">Janahan Vivekanandan</h1>
+        <div class="bf-pcounts">
+          <div><span class="n">109</span><br /><span class="l">Followers</span></div>
+          <div><span class="n">11</span><br /><span class="l">Following</span></div>
+        </div>
+        <button class="btn btn--green btn--md">Follow</button>
+      </div>
+    </div>
+
+    <div class="bf-section" style="border-top:none">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">What Janahan cares about</h2>
+      <div class="bf-cares">
+        <span><svg width="18" height="18" style="fill:var(--hrt-color-text-supporting)"><use href="#i-heart"/></svg> Animals</span>
+        <span><svg width="18" height="18" style="fill:var(--hrt-color-text-supporting)"><use href="#i-heart"/></svg> Arts &amp; Culture</span>
+        <span><svg width="18" height="18" style="fill:var(--hrt-color-text-supporting)"><use href="#i-heart"/></svg> Environment</span>
+      </div>
+    </div>
+
+    <div class="bf-section">
+      <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">Janahan’s featured causes</h2>
+      <div class="carousel__scroll" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:var(--hrt-size-spacing-2);overflow-x:auto">
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">photo</span></div><div class="fcard__body row gap-2" style="justify-content:space-between"><div><div class="fcard__title">Keep Sandy on Ossabaw</div><div class="fcard__meta">$66,785 raised</div></div><div class="ring ring--sm" style="--p:33"><div class="ring__hole">33%</div></div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">photo</span></div><div class="fcard__body row gap-2" style="justify-content:space-between"><div><div class="fcard__title">Saving Eliza</div><div class="fcard__meta">$2,078,890 raised</div></div><div class="ring ring--sm" style="--p:52"><div class="ring__hole">52%</div></div></div></div>
+        <div class="fcard"><div class="ph fcard__img"><span class="ph__label">photo</span></div><div class="fcard__body row gap-2" style="justify-content:space-between"><div><div class="fcard__title">Andy Ritchie’s Big Headache</div><div class="fcard__meta">$102,442 raised</div></div><div class="ring ring--sm" style="--p:100"><div class="ring__hole">102%</div></div></div></div>
+      </div>
+    </div>
+
+    <div class="tabbar" style="margin-top:var(--hrt-size-spacing-2)">
+      <button class="tabbar__tab" aria-selected="true">Activity</button>
+      <button class="tabbar__tab" aria-selected="false">About</button>
+    </div>
+
+    <div class="bf-pcols" style="margin-top:var(--hrt-size-spacing-3)">
+      <div>
+        <div class="card" style="padding:var(--hrt-size-spacing-3); margin-bottom:var(--hrt-size-spacing-3)">
+          <div class="row gap-2"><span class="avatar avatar--sm">JV</span><div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Janahan Vivekanandan</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">3 mos</div></div><span class="muted">···</span></div>
+          <div style="text-align:center; font-weight:var(--hrt-font-weight-bold); margin-top:var(--hrt-size-spacing-2)">Janahan Vivekanandan donated $200 to a fundraiser</div>
+          <div class="muted" style="text-align:center; font-size:var(--hrt-size-font-body-xs); margin-top:var(--hrt-size-spacing-half)">Benefiting Watch Duty</div>
+          <div class="ph fcard__img" style="aspect-ratio:4/3; border-radius:var(--hrt-size-radius-md); margin-block:var(--hrt-size-spacing-2)"><span class="ph__label">update image</span></div>
+          <div class="bf-pcardmini"><strong style="font-size:var(--hrt-size-font-body-sm)">Real-Time Alerts for Wildfire Safety</strong><div class="ring ring--sm" style="--p:70"><div class="ring__hole">70%</div></div></div>
+          <div class="bf-feedcard__react" style="margin-top:var(--hrt-size-spacing-2)"><svg><use href="#i-heart"/></svg> 2 <svg><use href="#i-comment"/></svg> <svg><use href="#i-share"/></svg></div>
+        </div>
+        <div class="card" style="padding:var(--hrt-size-spacing-3)">
+          <div class="row gap-2"><span class="avatar avatar--sm">JV</span><div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Janahan Vivekanandan</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">3 mos</div></div><span class="muted">···</span></div>
+          <p style="font-size:var(--hrt-size-font-body-sm); margin:var(--hrt-size-spacing-2) 0 0">As climate-related disasters worsen, it’s crucial that we act swiftly. I believe in the mission of Watch Duty… <a href="#" style="color:var(--hrt-color-text-brand)">view full story</a></p>
+          <div style="text-align:center; font-weight:var(--hrt-font-weight-bold); margin-top:var(--hrt-size-spacing-2)">Janahan Vivekanandan started a fundraiser</div>
+          <div class="muted" style="text-align:center; font-size:var(--hrt-size-font-body-xs); margin-top:var(--hrt-size-spacing-half)">Benefiting Watch Duty</div>
+          <div class="ph fcard__img" style="aspect-ratio:4/3; border-radius:var(--hrt-size-radius-md); margin-block:var(--hrt-size-spacing-2)"><span class="ph__label">campaign image</span></div>
+          <div class="bf-feedcard__react"><svg><use href="#i-heart"/></svg> <svg><use href="#i-comment"/></svg> <svg><use href="#i-share"/></svg></div>
+        </div>
+      </div>
+
+      <div class="bf-discover-panel">
+        <div class="section-h" style="font-size:var(--hrt-size-font-heading-xs); margin-bottom:var(--hrt-size-spacing-2)">Discover more people</div>
+        <div class="bf-discover-row"><span class="avatar avatar--sm">JD</span><span class="nm">Jimmy Darts</span><button class="btn btn--green btn--sm">Follow</button></div>
+        <div class="bf-discover-row"><span class="avatar avatar--sm">SB</span><span class="nm">SB Mowing</span><button class="btn btn--green btn--sm">Follow</button></div>
+        <div class="bf-discover-row"><span class="avatar avatar--sm">PG</span><span class="nm">Pattie Gonia</span><button class="btn btn--green btn--sm">Follow</button></div>
+        <div class="bf-discover-row"><span class="avatar avatar--sm">LM</span><span class="nm">Little Miss Flint</span><button class="btn btn--green btn--sm">Follow</button></div>
+        <div style="margin-top:var(--hrt-size-spacing-2)"><button class="btn btn--secondary btn--sm btn--block"><svg width="16" height="16" style="fill:currentColor"><use href="#i-search"/></svg> Find someone you know</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ FOOTER (KEEP AS-IS) ============================ -->
+<footer class="gfooter">
+  <div class="hrt-container xl gfooter__grid">
+    <div class="gfooter__col"><div class="gfooter__brand"><span class="mark"></span><strong style="color:var(--hrt-color-text-brand)">gofundme</strong></div><p>The world’s most trusted free fundraising platform.</p></div>
+    <div class="gfooter__col"><h4>Fundraise</h4><a href="#">How it works</a><a href="#">Categories</a></div>
+    <div class="gfooter__col"><h4>About</h4><a href="#">About us</a><a href="#">Newsroom</a></div>
+    <div class="gfooter__col"><h4>Resources</h4><a href="#">Help center</a><a href="#">Cookie Preferences</a></div>
+  </div>
+</footer>
+
+<!-- ============================ P2 · WEEKLY DIGEST EMAIL (mockup) ============================ -->
+<div class="modal" id="digestModal">
+  <div class="email">
+    <div class="email__bar">
+      <span class="email__logo"><span class="mark"></span> gofundme</span>
+      <button class="js-digest-close" style="border:none;background:none;font-size:22px;color:var(--hrt-color-text-supporting)" aria-label="Close">×</button>
+    </div>
+    <div class="email__body">
+      <div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Subject</div>
+      <div style="font-weight:var(--hrt-font-weight-bold); margin-bottom: var(--hrt-size-spacing-2)">4 updates from people you follow on GoFundMe</div>
+      <p style="margin:0 0 var(--hrt-size-spacing-2)">Here’s what happened since your last visit.</p>
+      <div class="arow"><span class="avatar avatar--sm">RA</span><div class="arow__body"><div class="verb">Updated</div><div class="arow__title">Real-Time Alerts for Wildfire Safety</div><div class="arow__meta">posted an update · 4 days ago</div></div><a class="arow__cta" href="fundraiser.html">Read →</a></div>
+      <div class="arow"><span class="avatar avatar--sm">JS</span><div class="arow__body"><div class="verb">Published</div><div class="arow__title">Janahan started “Save the Park at Ossabaw Island”</div><div class="arow__meta">6 days ago</div></div><a class="arow__cta" href="fundraiser.html">View →</a></div>
+      <div class="arow"><span class="avatar avatar--sm">SM</span><div class="arow__body"><div class="verb">Donated</div><div class="arow__title">Sarah M. donated to “Keep Sandy on Ossabaw”</div><div class="arow__meta">7 days ago</div></div><a class="arow__cta" href="fundraiser.html">View →</a></div>
+    </div>
+    <div class="email__foot">
+      Braze · Sunday 9 AM local (adjustable: weekly / monthly / off) · referrer_source = profile_digest_email<br />
+      <a href="#" style="color:var(--hrt-color-text-brand)">Manage email preferences</a> · <a href="#" style="color:var(--hrt-color-text-brand)">Unsubscribe</a><br />
+      GoFundMe · 855 Jefferson Ave, Redwood City, CA 94063
+    </div>
+  </div>
+</div>
+
+<script src="icons.js"></script>
+<script src="overlay.js"></script>
+<script>
+(function () {
+  const body = document.body;
+  const overlayOn = () => body.getAttribute("data-overlay") === "on";
+
+  document.querySelectorAll(".tabbar__tab").forEach(t => t.addEventListener("click", () => {
+    document.querySelectorAll(".tabbar__tab").forEach(x => x.setAttribute("aria-selected", "false"));
+    t.setAttribute("aria-selected", "true");
+    document.querySelectorAll(".tabpanel").forEach(p => p.hidden = true);
+    document.getElementById("tab-" + t.dataset.tab).hidden = false;
+  }));
+
+  /* sticky header reveal */
+  const chead = document.getElementById("chead");
+  window.addEventListener("scroll", () => chead.classList.toggle("show", window.scrollY > 320));
+
+  document.addEventListener("click", (e) => {
+    const f = e.target.closest(".js-follow");
+    if (f && !overlayOn()) {
+      const following = f.classList.contains("btn--following");
+      f.classList.toggle("btn--following", !following);
+      f.classList.toggle("btn--primary", following);
+      f.innerHTML = following ? "Follow" : '<svg width="18" height="18"><use href="#i-check"/></svg> Following';
+    }
+    const pf = e.target.closest(".js-pfollow");
+    if (pf && !overlayOn()) {
+      const on = pf.classList.contains("btn--following");
+      pf.classList.toggle("btn--following", !on);
+      pf.textContent = on ? "Follow" : "Following";
+    }
+    if (e.target.closest(".js-digest") && !overlayOn()) document.getElementById("digestModal").classList.add("open");
+    if (e.target.closest(".js-digest-close")) document.getElementById("digestModal").classList.remove("open");
+  });
+  document.getElementById("digestModal").addEventListener("click", (e) => { if (e.target.id === "digestModal") e.currentTarget.classList.remove("open"); });
+})();
+</script>
+<script src="suncreate.js"></script>
+</body>
+</html>

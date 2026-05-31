@@ -1,0 +1,28 @@
+# Local infra for the GoFundMe redesign demo.
+#   docker compose up -d   →  Postgres + pgvector on :5432
+# Then:  npm install && npm run db:setup && npm run db:seed && npm run dev
+#
+# DATABASE_URL in .env should point here for local dev, e.g.:
+#   postgres://gfm:gfm@localhost:5432/gfm
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: gfm-postgres
+    environment:
+      POSTGRES_USER: gfm
+      POSTGRES_PASSWORD: gfm
+      POSTGRES_DB: gfm
+    ports:
+      - '5432:5432'
+    volumes:
+      - gfm-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gfm -d gfm']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Optional: self-hosted PostHog is heavy; the app defaults to EU cloud (.env) or the
+  # MSW stub for offline dev. Uncomment a posthog service here only if you want it local.
+volumes:
+  gfm-pgdata:

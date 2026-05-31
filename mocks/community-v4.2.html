@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Community (v4.2 · physics board) — Watch Duty</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="shared.css" />
+<link rel="stylesheet" href="overlay.css" />
+<link rel="stylesheet" href="before.css" />
+<link rel="stylesheet" href="v4.css" />
+<link rel="stylesheet" href="marks.css" />
+<style>
+  .page { padding-block: var(--hrt-size-spacing-3); }
+  .cover { aspect-ratio: 16/9; border-radius: var(--hrt-size-radius-xxxl); }
+  @media (min-width:768px){ .cover { aspect-ratio: 21/9; } }
+  .hero__head { display:flex; align-items:flex-start; justify-content:space-between; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-3); }
+  .hero__name { font-size: var(--hrt-size-font-heading-xl); font-weight: var(--hrt-font-weight-bold); letter-spacing: var(--hrt-letter-spacing-tight); margin:0; }
+  .stats { font-size: var(--hrt-size-font-body-md); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-1); }
+  .stats strong { color: var(--hrt-color-text-default); }
+  .milestone { font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-brand); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-1); }
+  .hero__cta { display:flex; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-3); flex-wrap: wrap; }
+  .hero__cta .btn { flex: 1 1 180px; }
+  .followmicro { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); margin-top: var(--hrt-size-spacing-1); }
+  .warmarrival { background: var(--hrt-color-surface-brand-subtle); color: var(--hrt-color-text-brand-strong); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); margin-top: var(--hrt-size-spacing-2); }
+
+  /* sticky community header */
+  .chead { position: sticky; top: 64px; z-index: 30; background: var(--hrt-color-surface-neutral-subtle); border-bottom: 1px solid var(--hrt-color-border-neutral-extra-subtle); transform: translateY(-120%); transition: transform var(--hrt-time-transition-fast) var(--hrt-ease-default); }
+  .chead.show { transform: translateY(0); }
+  .chead__inner { display:flex; align-items:center; justify-content:space-between; gap: var(--hrt-size-spacing-2); min-height: 52px; }
+  .chead__name { font-size: var(--hrt-size-font-heading-sm); font-weight: var(--hrt-font-weight-bold); }
+
+  .tabbar-wrap { position: sticky; top: 64px; z-index: 20; background:#fff; }
+  .tabpanel { padding-block: var(--hrt-size-spacing-3); }
+  .tabpanel[hidden] { display:none; }
+
+  /* activity feed */
+  .divider { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-md); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); color: var(--hrt-color-text-supporting); position: sticky; top: calc(64px + 52px); z-index: 10; }
+  .activity { display:flex; gap: var(--hrt-size-spacing-2); padding: var(--hrt-size-spacing-2) 0; border-bottom: 1px solid var(--hrt-color-border-neutral-extra-subtle); }
+  .activity__body { flex:1; }
+  .activity__txt { font-size: var(--hrt-size-font-body-md); }
+  .activity__time { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+  .reactions { display:flex; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-1); align-items:center; }
+  .react { display:inline-flex; align-items:center; gap:4px; font-size: var(--hrt-size-font-body-sm); color: var(--hrt-color-text-supporting); background:none; border:none; padding:0; }
+  .react svg { width:18px; height:18px; fill: currentColor; }
+  .react--on { color: var(--hrt-color-text-brand); }
+  .react--badge { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-sm); padding: 2px 6px; }
+
+  /* PYMK strip */
+  .strip { background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-xxxl); padding: var(--hrt-size-spacing-2); }
+  .strip__head { display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--hrt-size-spacing-2); }
+  .strip__title { font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); }
+  .strip__scroll { display:flex; gap: var(--hrt-size-spacing-2); overflow-x:auto; scrollbar-width:none; }
+  .strip__scroll::-webkit-scrollbar { display:none; }
+  .pymkcard { background:#fff; border:1px solid var(--hrt-color-border-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xl); padding: var(--hrt-size-spacing-2); min-width: 120px; text-align:center; display:flex; flex-direction:column; align-items:center; gap: var(--hrt-size-spacing-1); flex:none; }
+  .pymkcard__name { font-size: var(--hrt-size-font-body-xs); color: var(--hrt-color-text-supporting); }
+
+  /* fundraisers tab */
+  .filters { display:flex; gap: var(--hrt-size-spacing-1); overflow-x:auto; scrollbar-width:none; padding-bottom: var(--hrt-size-spacing-1); }
+  .filters::-webkit-scrollbar { display:none; }
+  .fcards-strip { display:flex; gap: var(--hrt-size-spacing-2); overflow-x:auto; scrollbar-width:none; }
+  .fcards-strip::-webkit-scrollbar { display:none; }
+  .fcards-strip .fcard { min-width: 240px; flex:none; }
+  .leaderprompt { background: var(--hrt-color-surface-neutral-extra-subtle); border-radius: var(--hrt-size-radius-xxxl); padding: var(--hrt-size-spacing-3); }
+  .lpcards { display:flex; flex-direction:column; gap: var(--hrt-size-spacing-2); margin-top: var(--hrt-size-spacing-2); }
+  .lpstate { display:none; }
+  .lpstate.show { display:block; }
+  .searchbar { display:flex; align-items:center; gap: var(--hrt-size-spacing-1); background: var(--hrt-color-surface-neutral-subtle); border-radius: var(--hrt-size-radius-full); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2); color: var(--hrt-color-text-supporting); font-size: var(--hrt-size-font-body-sm); margin-block: var(--hrt-size-spacing-3); }
+  .grid { display:grid; grid-template-columns: 1fr; gap: var(--hrt-size-spacing-2); }
+  @media (min-width:560px){ .grid { grid-template-columns: 1fr 1fr; } }
+  .progresswrap { margin-top: var(--hrt-size-spacing-1); }
+
+  .toast { position: fixed; left:50%; transform: translateX(-50%) translateY(calc(100% + var(--hrt-size-spacing-8))); bottom: var(--hrt-size-spacing-4); background: var(--hrt-color-text-default); color:#fff; border-radius: var(--hrt-size-radius-full); padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-3); font-size: var(--hrt-size-font-body-sm); font-weight: var(--hrt-font-weight-bold); z-index: 80; transition: transform var(--hrt-time-transition) var(--hrt-ease-default); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body class="v4-page" data-screen-label="Community page">
+
+<!-- ============================ GLOBAL NAV (KEEP AS-IS) ============================ -->
+<header class="gnav">
+  <div class="hrt-container lg gnav__inner">
+    <a class="gnav__logo" href="fundraiser.html"><span class="mark"><svg width="16" height="16"><use href="#i-heart"/></svg></span> gofundme</a>
+    <span class="gnav__search"><svg width="16" height="16"><use href="#i-search"/></svg> Search</span>
+    <nav class="gnav__links"><a href="#">Donate</a><a href="#">Fundraise</a><a href="#">About</a></nav>
+    <span class="gnav__spacer"></span>
+    <button class="gnav__hamburger" aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
+  </div>
+</header>
+
+<!-- sticky community header (reveals on scroll past hero) -->
+<div class="chead" id="chead" data-after-only>
+  <div class="hrt-container lg chead__inner">
+    <span class="chead__name">Watch Duty</span>
+    <a class="btn btn--secondary btn--sm" href="#">Start a GoFundMe</a>
+  </div>
+</div>
+
+<div class="after-view">
+<main class="hrt-container lg page">
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="hero" data-screen-label="Hero">
+    <div class="ph cover"><span class="ph__label">community cover image · 16:9</span></div>
+
+    <!-- shared_by_extro / post-donate-community-follow warm arrival -->
+    <div class="warmarrival" data-show="shared_by_extro" data-after-only>Welcome — you just supported a fundraiser in this community.</div>
+
+    <div class="hero__head">
+      <div>
+        <h1 class="hero__name">Watch Duty</h1>
+        <!-- C7 · SSR stats (zero CLS). Guardrail tier — not highlighted on page. -->
+        <div class="stats"><strong>$4.2M</strong> raised · <strong>312</strong> fundraisers · <strong>1,247</strong> people following</div>
+        <!-- C1 · milestone gamification copy (fires at 5/25/100/500 thresholds) -->
+        <div class="milestone" data-after-only>1,247 people are following — be #1,248!</div>
+      </div>
+      <span class="pill pill--neutral">CHALLENGE</span>
+    </div>
+
+    <div class="hero__cta">
+      <!-- C1 · Follow CTA — PRIMARY on community (Follow IS this page's primary action). State adapts per persona. -->
+      <button class="btn btn--primary js-follow" data-show="anonymous close_friend shared_by_extro returning_lapsed profile_owner"
+        data-overlay-tier="2" data-overlay-delta="C1"
+        data-overlay-events="Community Followed"
+        data-overlay-metric="Follow CTA — first-class + value prop"
+        data-overlay-why="Labeled Follow + persistent value-prop microcopy + milestone copy at 5/25/100/500. Maher 2012: social ties ~2× visit frequency. GFM has be_community_digest plumbing. Strongest retention lever on this page."
+        data-overlay-dashboard="Repeat Visits">Follow Watch Duty</button>
+      <button class="btn btn--following js-follow hidden" data-show="extrovert"
+        data-overlay-tier="2" data-overlay-delta="C1"
+        data-overlay-events="Community Followed"
+        data-overlay-metric="Follow CTA — already following"
+        data-overlay-why="Mike already follows this community; the digest pulls him back weekly."
+        data-overlay-dashboard="Repeat Visits"><svg width="18" height="18"><use href="#i-check"/></svg> Following Watch Duty</button>
+
+      <!-- C6 · Share with AI per-channel copy -->
+      <button class="btn btn--secondary js-share"
+        data-overlay-tier="2" data-overlay-delta="C6"
+        data-overlay-events="Community Share Clicked, share_channel, share_context=community_hero"
+        data-overlay-metric="AI per-channel community share copy"
+        data-overlay-why="LLM copy per (community, channel), regenerated every 30d or on ≥10% donor/raised delta. GFM runs amp24_agentic_share_text live; community sharing has wider top-of-funnel reach than single-fundraiser sharing."
+        data-overlay-dashboard="Share / K-factor">Share</button>
+    </div>
+    <div class="followmicro" data-after-only>Get updates when new fundraisers are added or milestones are hit.</div>
+  </section>
+
+  <!-- ===================== SHARE ENGINE — grow the community (goal: shares) ===================== -->
+  <section class="spread" data-screen-label="Invite studio"
+    data-overlay-tier="2" data-overlay-delta="v4 · community share studio"
+    data-overlay-events="Community Share Clicked, share_channel, share_context=studio"
+    data-overlay-metric="Share — per-channel invite studio"
+    data-overlay-why="Communities grow when members bring members. Per-channel invite copy (C6 AI) rendered as one-tap previews. Community shares have wider top-of-funnel reach than single-fundraiser shares."
+    data-overlay-dashboard="Share / K-factor">
+    <div class="spread__eyebrow">Bigger together</div>
+    <h2 class="spread__head">Invite people to Watch Duty</h2>
+    <p class="spread__sub">Every invite brings someone new to the cause. Pick a channel — we wrote the message.</p>
+    <div class="studio">
+      <div class="scard">
+        <div class="scard__head"><span class="chip" style="background:#e7fce3;color:#1f8a4c"><svg><use href="#i-whatsapp"/></svg></span> WhatsApp <span class="scard__tone">· friend tone</span></div>
+        <div class="bubble bubble--wa">There’s a community keeping people safe from wildfire — Watch Duty. 1,247 of us already follow it. Join? 👇</div>
+        <button class="btn btn--primary btn--sm js-share">Send on WhatsApp</button>
+      </div>
+      <div class="scard">
+        <div class="scard__head"><span class="chip" style="background:#eef3f6"><svg><use href="#i-x"/></svg></span> X <span class="scard__tone">· punchy &amp; public</span></div>
+        <div class="bubble bubble--x">$4.2M raised, 312 fundraisers, one mission: warn people before wildfire hits. Follow @WatchDuty’s community.</div>
+        <button class="btn btn--primary btn--sm js-share">Post to X</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- shareable milestone card (screenshot-ready) -->
+  <div class="v4-block">
+    <div class="celebrate"
+      data-overlay-tier="2" data-overlay-delta="v4 · shareable milestone"
+      data-overlay-events="Milestone Card Shared" data-overlay-metric="Share — milestone celebration card"
+      data-overlay-why="A screenshot-ready celebration card turns a community milestone into shareable social currency (Berger & Milkman 2012)." data-overlay-dashboard="Share / K-factor">
+      <div class="celebrate__big">$4.2M raised together</div>
+      <div class="celebrate__sub">1,247 people · 312 fundraisers · one cause</div>
+      <button class="btn btn--lime btn--sm" style="margin-top:var(--hrt-size-spacing-2)">Share this milestone</button>
+    </div>
+  </div>
+
+  <!-- top inviters board -->
+  <section class="sharerboard v4-block" data-screen-label="Top inviters"
+    data-overlay-tier="2" data-overlay-delta="v4 · top inviters"
+    data-overlay-events="Sharer Board Viewed" data-overlay-metric="Share — gamified inviting"
+    data-overlay-why="A leaderboard of inviters makes growing the community a status game." data-overlay-dashboard="Share / K-factor">
+    <h2 class="v4-h">Top inviters this week</h2>
+    <p class="muted" style="font-size:var(--hrt-size-font-body-sm); margin:0 0 var(--hrt-size-spacing-2)">Members bringing the most people to the cause.</p>
+    <div class="sharerrow"><span class="sharerrow__rank">1</span><span class="avatar avatar--sm">MT</span><span class="sharerrow__nm">Mike T.</span><span class="sharerrow__stat"><strong>21 invites</strong><div>8 joined</div></span></div>
+    <div class="sharerrow"><span class="sharerrow__rank">2</span><span class="avatar avatar--sm">AC</span><span class="sharerrow__nm">Ana C.</span><span class="sharerrow__stat"><strong>13 invites</strong><div>5 joined</div></span></div>
+    <div class="sharerrow"><span class="sharerrow__rank">3</span><span class="avatar avatar--sm">SK</span><span class="sharerrow__nm">Sarah K.</span><span class="sharerrow__stat"><strong>9 invites</strong><div>4 joined</div></span></div>
+  </section>
+
+  <!-- ===================== v4.2 · MARKS — minimized intro (the board now lives in the page background) ===================== -->
+  <section class="v4-block" data-screen-label="Marks intro">
+    <div class="marks-intro"
+      data-overlay-tier="2" data-overlay-delta="v4.2 · Marks (ambient)"
+      data-overlay-events="Board Viewed, Mark Created"
+      data-overlay-metric="Repeat Visits + Share — the collective reply"
+      data-overlay-why="The hearts flanking this page are real supporters — follow places one, sharing colours it, giving grows it. It fills over the campaign's life (Repeat Visits) and the sharer-size inheritance pulls sharing. System-placed + curated palette = un-weaponizable.">
+      <div class="marks-intro__txt">
+        <div class="marks-intro__h">1,240 supporters — and counting — around this page</div>
+        <p class="marks-intro__p">Every sun in the margins is someone who showed up. <b>Follow</b> lights yours · <b>sharing</b> colours it · <b>giving</b> grows it. No dollar figures — just presence.</p>
+        <div class="board__legend"><span><span class="mark mark--xs"></span> followed</span><span><span class="mark mark--sm mark--lime sun-demo--share"></span> shared — colour</span><span><span class="mark mark--sm mark--gold sun-demo--give"></span> gave — size</span></div>
+      </div>
+      <button class="btn btn--primary marks-intro__btn" disabled>Leave your sun — do one thing first</button>
+    </div>
+  </section>
+
+  <!-- ===================== TAB BAR ===================== -->
+  <div class="tabbar-wrap">
+    <div class="tabbar" role="tablist">
+      <button class="tabbar__tab" role="tab" aria-selected="true"  data-tab="activity">Activity</button>
+      <button class="tabbar__tab" role="tab" aria-selected="false" data-tab="fundraisers">Fundraisers</button>
+      <button class="tabbar__tab" role="tab" aria-selected="false" data-tab="about">About</button>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY TAB ===================== -->
+  <section class="tabpanel" id="tab-activity" role="tabpanel" data-screen-label="Activity tab">
+    <!-- C2 · "Since your last visit" divider (sole orientation signal; collapses for first-timers) -->
+    <div class="divider" data-after-only data-show="close_friend"
+      data-overlay-tier="2" data-overlay-delta="C2"
+      data-overlay-events="Activity Feed Viewed, returning_member"
+      data-overlay-metric="“Since your last visit” divider"
+      data-overlay-why="Items above = new, below = seen. The sole orientation signal for returning members (absorbs the cut C7 banner). Lowers scan cost; lifts scroll-depth. GFM expanding fe-ssr-generic-activity-feed."
+      data-overlay-dashboard="Repeat Visits">Since your last visit — 3 new posts</div>
+    <div class="divider" data-after-only data-show="extrovert"
+      data-overlay-tier="2" data-overlay-delta="C2"
+      data-overlay-events="Activity Feed Viewed, returning_member"
+      data-overlay-metric="“Since your last visit” divider"
+      data-overlay-why="Large delta because of a long gap relative to volume. Orientation signal for returning members."
+      data-overlay-dashboard="Repeat Visits">Since your last visit — 47 new posts</div>
+
+    <!-- Activity feed = POSTS people return to read (fundraiser updates, member posts, milestones). Reactions promoted inline (C2). -->
+    <article class="post">
+      <div class="post__head">
+        <span class="avatar avatar--sm">SJ</span>
+        <div style="flex:1"><div class="nm">Sarah J. · Watch Duty</div><div class="tm">Organizer · 2h ago</div></div>
+      </div>
+      <div class="post__verb">Fundraiser update</div>
+      <h3 class="post__title">Alert system is now live in 3 counties</h3>
+      <p class="post__body">This week 4,200 households got their first real-time wildfire notification, and our reporting desk is now staffed 18 hours a day. Here’s exactly what your support built…</p>
+      <div class="ph post__img"><span class="ph__label">update photo</span></div>
+      <a class="post__link" href="fundraiser.html"><span style="font-weight:var(--hrt-font-weight-bold);font-size:var(--hrt-size-font-body-sm)">Real-Time Alerts for Wildfire Safety</span><span class="muted" style="font-size:var(--hrt-size-font-body-xs)">78% funded →</span></a>
+      <div class="post__react">
+        <button class="react react--on js-react"><svg><use href="#i-heart"/></svg> 124</button>
+        <button class="react"><svg><use href="#i-comment"/></svg> 18</button>
+        <button class="react"><svg><use href="#i-share"/></svg></button>
+      </div>
+    </article>
+    <article class="post">
+      <div class="post__head">
+        <span class="avatar avatar--sm">JL</span>
+        <div style="flex:1"><div class="nm">James L.</div><div class="tm">Member · 5h ago</div></div>
+      </div>
+      <div class="post__verb">New fundraiser</div>
+      <h3 class="post__title">Mapping every evacuation route in the North Hills</h3>
+      <p class="post__body">Before fire season we want every route mapped, signed, and loaded into the alert system. We’re a third of the way to the gear we need…</p>
+      <div class="ph post__img"><span class="ph__label">campaign photo</span></div>
+      <a class="post__link" href="fundraiser.html"><span style="font-weight:var(--hrt-font-weight-bold);font-size:var(--hrt-size-font-body-sm)">Evacuation Route Mapping</span><span class="muted" style="font-size:var(--hrt-size-font-body-xs)">34% funded →</span></a>
+      <div class="post__react">
+        <button class="react js-react"><svg><use href="#i-heart"/></svg> 41</button>
+        <button class="react"><svg><use href="#i-comment"/></svg> 6</button>
+        <button class="react"><svg><use href="#i-share"/></svg></button>
+      </div>
+    </article>
+    <article class="post">
+      <div class="post__head">
+        <span class="avatar avatar--sm">WD</span>
+        <div style="flex:1"><div class="nm">Watch Duty</div><div class="tm">Community · 8h ago</div></div>
+      </div>
+      <div class="post__verb">Milestone</div>
+      <h3 class="post__title">We just crossed $4M raised together</h3>
+      <p class="post__body">Thank you to all 1,247 of you. This is what a community looks like when it decides no one should face a wildfire without warning. Here’s where the next dollar goes…</p>
+      <div class="ph post__img"><span class="ph__label">milestone photo</span></div>
+      <div class="post__react">
+        <button class="react react--on js-react"><svg><use href="#i-heart"/></svg> 142</button>
+        <button class="react"><svg><use href="#i-comment"/></svg> 11</button>
+        <button class="react"><svg><use href="#i-share"/></svg></button>
+      </div>
+    </article>
+
+    <!-- C3 · PYMK strip (after 3rd item) with inline Follow. Graph vs fallback per persona. -->
+    <div style="padding-block: var(--hrt-size-spacing-2)">
+      <!-- graph result: close_friend / extrovert / profile_owner -->
+      <div class="strip js-pymk" data-after-only data-show="close_friend extrovert profile_owner"
+        data-overlay-tier="2" data-overlay-delta="C3"
+        data-overlay-events="PYMK Module Viewed, PYMK Follow Clicked, pymk_rank_position"
+        data-overlay-metric="PYMK strip with inline Follow"
+        data-overlay-why="Donors with a mutual connection. Inline Follow closes the activation loop in-strip (no side-quest). GFM owns PYMK infra (fe-ssr-campaign-pymk, social_graph_second_connection_lookup)."
+        data-overlay-dashboard="Follow rate">
+        <div class="strip__head"><span class="strip__title">Donors you might know</span><button class="react" aria-label="Dismiss"><svg><use href="#i-close"/></svg></button></div>
+        <div class="strip__scroll">
+          <div class="pymkcard"><span class="avatar avatar--md">AC</span><span class="pymkcard__name">Ana C.</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+          <div class="pymkcard"><span class="avatar avatar--md">MT</span><span class="pymkcard__name">Mike T.</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+          <div class="pymkcard"><span class="avatar avatar--md">SJ</span><span class="pymkcard__name">Sarah J.</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+          <div class="pymkcard"><span class="avatar avatar--md">RP</span><span class="pymkcard__name">Raj P.</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+        </div>
+      </div>
+      <!-- fallback (top donors by amount): anonymous / shared_by_extro / returning_lapsed -->
+      <div class="strip js-pymk" data-after-only data-show="anonymous shared_by_extro returning_lapsed"
+        data-overlay-tier="2" data-overlay-delta="C3"
+        data-overlay-events="PYMK Module Viewed, PYMK Follow Clicked"
+        data-overlay-metric="PYMK strip — top-donors fallback"
+        data-overlay-why="No usable graph signal → fall back to top-3 donors by contribution (L3.5 rule 4: no empty states). Inline Follow still closes the loop."
+        data-overlay-dashboard="Follow rate">
+        <div class="strip__head"><span class="strip__title">Top donors</span><button class="react" aria-label="Dismiss"><svg><use href="#i-close"/></svg></button></div>
+        <div class="strip__scroll">
+          <div class="pymkcard"><span class="avatar avatar--md">MS</span><span class="pymkcard__name">Mark S. · $100</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+          <div class="pymkcard"><span class="avatar avatar--md">JD</span><span class="pymkcard__name">Jane D. · $50</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+          <div class="pymkcard"><span class="avatar avatar--md">EL</span><span class="pymkcard__name">Eli L. · $40</span><button class="btn btn--primary btn--sm js-pfollow">Follow</button></div>
+        </div>
+      </div>
+    </div>
+
+    <article class="post">
+      <div class="post__head">
+        <span class="avatar avatar--sm">PM</span>
+        <div style="flex:1"><div class="nm">Priya M.</div><div class="tm">Supporter · 3d ago</div></div>
+      </div>
+      <div class="post__verb">Supporter post</div>
+      <h3 class="post__title">Why I keep coming back to Watch Duty</h3>
+      <p class="post__body">They alerted my street before the Ridgewood fire reached us last year. I give a little every season now — it’s the clearest money I spend all year.</p>
+      <div class="post__react">
+        <button class="react js-react"><svg><use href="#i-heart"/></svg> 38</button>
+        <button class="react"><svg><use href="#i-comment"/></svg> 4</button>
+        <button class="react"><svg><use href="#i-share"/></svg></button>
+      </div>
+    </article>
+    <div style="margin-top: var(--hrt-size-spacing-3)"><button class="btn btn--secondary">Load more posts</button></div>
+  </section>
+
+  <!-- ===================== FUNDRAISERS TAB ===================== -->
+  <section class="tabpanel" id="tab-fundraisers" role="tabpanel" hidden data-screen-label="Fundraisers tab">
+    <!-- C5 · "From causes you follow" (returning members only; collapses for anonymous) -->
+    <div data-after-only data-show="close_friend extrovert profile_owner" style="margin-bottom: var(--hrt-size-spacing-3)">
+      <div class="strip__title" style="margin-bottom: var(--hrt-size-spacing-2)"
+        data-overlay-tier="1" data-overlay-delta="C5"
+        data-overlay-events="Fundraiser Card Clicked, section=followed_causes"
+        data-overlay-metric="“From causes you follow” personalized strip"
+        data-overlay-why="3 cards from categories matching the viewer's follow graph (L3.5 slot; hidden for anonymous). Warm traffic clicks higher than the unranked main list. personal_hub_cause_feed pattern applied here."
+        data-overlay-dashboard="Donate Funnel">From causes you follow</div>
+      <div class="fcards-strip">
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Smoke-Ready Air for Schools</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:41%"></div></div><div class="fcard__meta">$11,200 raised</div><a class="btn btn--primary btn--sm" href="fundraiser.html">Donate</a></div></div>
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Evacuation Routes Mapping</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:73%"></div></div><div class="fcard__meta">$18,900 raised</div><a class="btn btn--primary btn--sm" href="fundraiser.html">Donate</a></div></div>
+        <div class="fcard"><a href="fundraiser.html"><div class="ph fcard__img"><span class="ph__label">card</span></div></a><div class="fcard__body"><div class="fcard__title">Backup Radio Network</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:56%"></div></div><div class="fcard__meta">$24,100 raised</div><a class="btn btn--primary btn--sm" href="fundraiser.html">Donate</a></div></div>
+      </div>
+    </div>
+
+    <!-- C5 · filters (flag gate removed; SSR by default) -->
+    <div class="filters" data-after-only
+      data-overlay-tier="1" data-overlay-delta="C5"
+      data-overlay-events="Fundraiser Filter Applied, filter_type, filter_value"
+      data-overlay-metric="Fundraiser filters activated"
+      data-overlay-why="Existing GFM filter UI (Category / Time Period / Close to Goal) shipped SSR-by-default — a flag-off removal, not new UX. be_community_fundraiser_search confirms backend support."
+      data-overlay-dashboard="Donate Funnel">
+      <button class="pill pill--neutral">Category ▾</button>
+      <button class="pill pill--neutral">Time Period ▾</button>
+      <button class="pill pill--neutral">Close to Goal ▾</button>
+    </div>
+
+    <!-- C4 · leaderboard momentum prompt (page-state reactive; 3 states documented) -->
+    <div class="leaderprompt" data-after-only
+      data-overlay-tier="1" data-overlay-delta="C4"
+      data-overlay-events="Leaderboard Fundraiser Clicked, Start Fundraiser Clicked"
+      data-overlay-metric="Leaderboard momentum prompt"
+      data-overlay-why="Mirrors fundraiser-page D6 on a high-intent surface (users reading aggregate fundraising data). GFM-confirmed via the live money-box-donation-list-prompt A/B. Near-zero build cost."
+      data-overlay-dashboard="Donate Funnel">
+      <div class="lpstate show" data-lp="active">
+        <div class="eyebrow">Active momentum</div>
+        <p style="margin:var(--hrt-size-spacing-1) 0; font-weight:var(--hrt-font-weight-bold)">312 people donated to Watch Duty in the last 24 hours.</p>
+        <button class="btn btn--secondary btn--sm">See all fundraisers →</button>
+      </div>
+      <div class="lpstate" data-lp="near">
+        <div class="eyebrow">Near-goal leader</div>
+        <p style="margin:var(--hrt-size-spacing-1) 0; font-weight:var(--hrt-font-weight-bold)">Rapid Response Fund is $820 from its goal — 94 donors.</p>
+      </div>
+      <div class="lpstate" data-lp="quiet">
+        <div class="eyebrow">Quiet period</div>
+        <p style="margin:var(--hrt-size-spacing-1) 0; font-weight:var(--hrt-font-weight-bold)">84 fundraisers are raising for Watch Duty — add yours.</p>
+        <button class="btn btn--primary btn--sm">Start a GoFundMe</button>
+      </div>
+      <div class="row gap-1" style="margin-top:var(--hrt-size-spacing-2)">
+        <span class="muted" style="font-size:var(--hrt-size-font-body-xs)">demo states:</span>
+        <button class="react react--badge js-lp" data-go="active">active</button>
+        <button class="react react--badge js-lp" data-go="near">near-goal</button>
+        <button class="react react--badge js-lp" data-go="quiet">quiet</button>
+      </div>
+    </div>
+
+    <h2 class="section-h" style="margin: var(--hrt-size-spacing-3) 0 var(--hrt-size-spacing-2)">Top fundraisers</h2>
+    <div class="lpcards">
+      <div class="fcard fcard--condensed"><div class="ph fcard__img"><span class="ph__label">img</span></div><div class="fcard__body"><div class="fcard__title">Rapid Response Fund</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:91%"></div></div><div class="fcard__meta">$45,800 of $50,000 · by Watch Duty</div></div><button class="btn btn--primary btn--sm" style="align-self:center">Donate</button></div>
+      <div class="fcard fcard--condensed"><div class="ph fcard__img"><span class="ph__label">img</span></div><div class="fcard__body"><div class="fcard__title">Wildfire Recovery — Sonoma</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:62%"></div></div><div class="fcard__meta">$31,000 of $50,000 · by M. Reyes</div></div><button class="btn btn--primary btn--sm" style="align-self:center">Donate</button></div>
+      <div class="fcard fcard--condensed"><div class="ph fcard__img"><span class="ph__label">img</span></div><div class="fcard__body"><div class="fcard__title">Air Quality Sensors Network</div><div class="goalbar progresswrap"><div class="goalbar__fill" style="width:38%"></div></div><div class="fcard__meta">$19,000 of $50,000 · by Clean Air Co.</div></div><button class="btn btn--primary btn--sm" style="align-self:center">Donate</button></div>
+    </div>
+    <div style="margin-top:var(--hrt-size-spacing-2)"><button class="btn btn--secondary btn--sm">See all fundraisers</button></div>
+
+    <div class="searchbar"><svg width="16" height="16"><use href="#i-search"/></svg> Search fundraisers in Watch Duty</div>
+    <div class="grid">
+      <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Drone Recon for Spotters</div><div class="goalbar"><div class="goalbar__fill" style="width:27%"></div></div><div class="fcard__meta">$8,100 raised</div></div></div>
+      <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Community Warning Sirens</div><div class="goalbar"><div class="goalbar__fill" style="width:49%"></div></div><div class="fcard__meta">$14,600 raised</div></div></div>
+      <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Bilingual Alert Translation</div><div class="goalbar"><div class="goalbar__fill" style="width:66%"></div></div><div class="fcard__meta">$22,300 raised</div></div></div>
+      <div class="fcard"><div class="ph fcard__img"><span class="ph__label">card</span></div><div class="fcard__body"><div class="fcard__title">Reporter On-Call Stipend</div><div class="goalbar"><div class="goalbar__fill" style="width:83%"></div></div><div class="fcard__meta">$41,500 raised</div></div></div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT TAB (KEEP AS-IS) ===================== -->
+  <section class="tabpanel" id="tab-about" role="tabpanel" hidden data-screen-label="About tab">
+    <h2 class="section-h" style="margin-bottom:var(--hrt-size-spacing-2)">About Watch Duty</h2>
+    <p style="margin:0">Watch Duty is a nonprofit dedicated to keeping communities safe from wildfire. A network of volunteer reporters, off-duty firefighters, and dispatchers track active fires and share real-time information so people can make informed decisions during an emergency.</p>
+    <h3 class="section-h" style="margin:var(--hrt-size-spacing-3) 0 var(--hrt-size-spacing-1)">Community guidelines</h3>
+    <p class="muted" style="margin:0; font-size:var(--hrt-size-font-body-sm)">Be kind, stay on-topic, and never share information that could compromise an active response. Posts are moderated by community organizers.</p>
+    <h3 class="section-h" style="margin:var(--hrt-size-spacing-3) 0 var(--hrt-size-spacing-1)">Organized by</h3>
+    <a href="profile.html" class="row gap-2" style="color:var(--hrt-color-text-brand); font-weight:var(--hrt-font-weight-bold)"><span class="avatar avatar--sm">WD</span> Watch Duty Team</a>
+  </section>
+</main>
+</div><!-- /after-view -->
+
+<!-- ============================ BEFORE · current GoFundMe community (recreation of live site) ============================ -->
+<div class="before-view">
+  <div class="bf">
+    <div class="bf-chero">
+      <div>
+        <div class="eyebrow"><svg width="14" height="14" style="fill:var(--hrt-color-text-supporting);vertical-align:middle"><use href="#i-heart"/></svg> Community</div>
+        <h1 class="bf-pname" style="margin:var(--hrt-size-spacing-1) 0">Watch Duty</h1>
+        <p class="muted" style="font-size:var(--hrt-size-font-body-sm); margin:0">Use Watch Duty, see fast, real-time wildfire alerts. Join others rallying around this cause to support Watch Duty. <a href="#" style="color:var(--hrt-color-text-brand)">Read more</a></p>
+        <div class="bf-cstats">
+          <div><span class="n">$38.7K</span><span class="l">Raised</span></div>
+          <div><span class="n">480</span><span class="l">Donations</span></div>
+          <div><span class="n">180</span><span class="l">Followers</span></div>
+        </div>
+        <button class="btn btn--donate-green btn--md">Start a GoFundMe</button>
+      </div>
+      <div class="bf-cover-orange">WATCH DUTY</div>
+    </div>
+
+    <div style="margin-top:var(--hrt-size-spacing-4)">
+      <div class="podium">
+        <div class="podcard podcard--1"><span class="avatar avatar--sm podcard__ava">AK</span><div class="podcard__name">Arnie Katz</div><div class="podcard__desc">Seconds Matter with Watch Duty</div><div class="podcard__amt">$5,392</div></div>
+        <div class="podcard podcard--2"><span class="avatar avatar--sm podcard__ava">TC</span><div class="podcard__name">Tim Cadogan</div><div class="podcard__desc">Support Watch Duty</div><div class="podcard__amt">$16,344</div></div>
+        <div class="podcard podcard--3"><span class="avatar avatar--sm podcard__ava">JG</span><div class="podcard__name">Janahan G.</div><div class="podcard__desc">Real-Time Alerts</div><div class="podcard__amt">$2,102</div></div>
+      </div>
+      <div style="text-align:center; margin-top:var(--hrt-size-spacing-2)"><button class="btn btn--secondary btn--sm">See all</button></div>
+    </div>
+
+    <div class="tabbar" style="justify-content:center; margin-top:var(--hrt-size-spacing-3)">
+      <button class="tabbar__tab" aria-selected="true">Activity</button>
+      <button class="tabbar__tab" aria-selected="false">Fundraisers</button>
+      <button class="tabbar__tab" aria-selected="false">About</button>
+    </div>
+  </div>
+
+  <!-- reverse-chron activity feed (image-heavy update posts, reactions secondary) -->
+  <div class="bf" style="max-width:540px">
+    <div style="display:flex; justify-content:flex-end; margin-block:var(--hrt-size-spacing-2)"><span class="pill pill--neutral">Sort by: Latest ▾</span></div>
+
+    <div class="bf-feedcard">
+      <div class="row gap-2"><span class="avatar avatar--sm">MG</span><div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Matias G. Marsh</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Team · 2 days ago</div></div><span class="muted">···</span></div>
+      <div style="text-align:center; font-weight:var(--hrt-font-weight-bold); margin-top:var(--hrt-size-spacing-2)">Matias posted a fundraiser update</div>
+      <div class="ph bf-feedcard__img"><span class="ph__label">update image</span></div>
+      <div class="bf-cause" style="margin-bottom:var(--hrt-size-spacing-2)"><div><strong style="font-size:var(--hrt-size-font-body-sm)">Help us beat the goal for Arnie Katz</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Benefiting Watch Duty</div></div><div class="ring ring--sm" style="--p:64"><div class="ring__hole">64%</div></div></div>
+      <div class="bf-feedcard__react"><svg><use href="#i-heart"/></svg><svg><use href="#i-comment"/></svg><svg><use href="#i-share"/></svg></div>
+    </div>
+
+    <div class="bf-feedcard">
+      <div class="row gap-2"><span class="avatar avatar--sm">RG</span><div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Ranjit Ghemba</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Team · 3 days ago</div></div><span class="muted">···</span></div>
+      <div style="text-align:center; font-weight:var(--hrt-font-weight-bold); margin-top:var(--hrt-size-spacing-2)">Ranjit posted a fundraiser update</div>
+      <div class="ph bf-feedcard__img"><span class="ph__label">update image</span></div>
+      <div class="bf-cause" style="margin-bottom:var(--hrt-size-spacing-2)"><div><strong style="font-size:var(--hrt-size-font-body-sm)">Help us deliver real-time alerts</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Benefiting Watch Duty</div></div><div class="ring ring--sm" style="--p:41"><div class="ring__hole">41%</div></div></div>
+      <div class="bf-feedcard__react"><svg><use href="#i-heart"/></svg><svg><use href="#i-comment"/></svg><svg><use href="#i-share"/></svg></div>
+    </div>
+
+    <div class="bf-feedcard">
+      <div class="row gap-2"><span class="avatar avatar--sm">TC</span><div style="flex:1"><strong style="font-size:var(--hrt-size-font-body-sm)">Tim Cadogan</strong><div class="muted" style="font-size:var(--hrt-size-font-body-xs)">Team · 4 days ago</div></div><span class="muted">···</span></div>
+      <p style="font-size:var(--hrt-size-font-body-sm); margin:var(--hrt-size-spacing-2) 0 0">I’m thrilled to see the community come together for Watch Duty. Thanks to everyone who has donated and shared — the support has been incredible. <a href="#" style="color:var(--hrt-color-text-brand)">view more</a></p>
+      <div class="ph bf-feedcard__img"><span class="ph__label">photo</span></div>
+      <div class="bf-feedcard__react"><svg><use href="#i-heart"/></svg><svg><use href="#i-comment"/></svg><svg><use href="#i-share"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ FOOTER (KEEP AS-IS) ============================ -->
+<footer class="gfooter">
+  <div class="hrt-container lg gfooter__grid">
+    <div class="gfooter__col"><div class="gfooter__brand"><span class="mark"></span><strong style="color:var(--hrt-color-text-brand)">gofundme</strong></div><p>The world’s most trusted free fundraising platform.</p></div>
+    <div class="gfooter__col"><h4>Communities</h4><a href="#">Discover</a><a href="#">Start one</a></div>
+    <div class="gfooter__col"><h4>About</h4><a href="#">About us</a><a href="#">Newsroom</a></div>
+    <div class="gfooter__col"><h4>Resources</h4><a href="#">Help center</a><a href="#">Giving Guarantee</a><a href="#">Cookie Preferences</a></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">You’re following Watch Duty — we’ll email you when something new happens.</div>
+
+<script src="icons.js"></script>
+<script src="overlay.js"></script>
+<script>
+(function () {
+  const body = document.body;
+  const overlayOn = () => body.getAttribute("data-overlay") === "on";
+
+  /* tabs */
+  document.querySelectorAll(".tabbar__tab").forEach(t => t.addEventListener("click", () => {
+    document.querySelectorAll(".tabbar__tab").forEach(x => x.setAttribute("aria-selected", "false"));
+    t.setAttribute("aria-selected", "true");
+    document.querySelectorAll(".tabpanel").forEach(p => p.hidden = true);
+    document.getElementById("tab-" + t.dataset.tab).hidden = false;
+    if (overlayOn() && window.__rebuildOverlay) {} /* overlay re-scans on persona change; tab switch fine */
+  }));
+
+  /* sticky community header reveal */
+  const hero = document.getElementById("hero"), chead = document.getElementById("chead");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => chead.classList.toggle("show", !e.isIntersecting), { rootMargin: "-80px 0px 0px 0px" }).observe(hero);
+  }
+
+  /* follow toggle + toast */
+  const toast = document.getElementById("toast");
+  document.addEventListener("click", (e) => {
+    const f = e.target.closest(".js-follow");
+    if (f && !overlayOn()) {
+      const following = f.classList.contains("btn--following");
+      f.classList.toggle("btn--following", !following);
+      f.classList.toggle("btn--primary", following);
+      f.innerHTML = following ? "Follow Watch Duty" : '<svg width="18" height="18"><use href="#i-check"/></svg> Following Watch Duty';
+      if (!following) { toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 3500); }
+    }
+    const pf = e.target.closest(".js-pfollow");
+    if (pf && !overlayOn()) {
+      const on = pf.classList.contains("btn--following");
+      pf.classList.toggle("btn--following", !on); pf.classList.toggle("btn--primary", on);
+      pf.textContent = on ? "Follow" : "Following";
+    }
+    const rx = e.target.closest(".js-react");
+    if (rx && !overlayOn()) rx.classList.toggle("react--on");
+    const lp = e.target.closest(".js-lp");
+    if (lp && !overlayOn()) {
+      document.querySelectorAll(".lpstate").forEach(s => s.classList.toggle("show", s.dataset.lp === lp.dataset.go));
+    }
+  });
+})();
+</script>
+<script src="marks-bg.js"></script>
+<script src="suncreate.js"></script>
+</body>
+</html>

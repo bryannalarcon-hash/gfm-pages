@@ -1,0 +1,10 @@
+/* Imported LAST (after the designer's shared.css/v4.css/marks.css) to re-assert the
+   ambient-suns background trick: the page background lives on <html>, the body is
+   transparent so the z-index:-1 SunsLayer shows through the gutters. shared.css sets
+   body{background:white}, which would re-hide the suns — this overrides it. */
+html {
+  background: var(--hrt-color-surface-default);
+}
+body {
+  background: transparent;
+}

@@ -1,0 +1,159 @@
+/*
+ * Fundraiser page layout — 2-column grid mirroring mocks/fundraiser-v4.2.html.
+ * This file is imported by FundraiserPage.tsx to add the .fundraiser-layout grid class
+ * (mirrors the mock's inline .layout CSS block which is defined but unnamed in the mock).
+ * Only affects the fundraiser page.
+ */
+
+/* 2-column grid: full-width mobile → [content col | 380px rail] at 1024px+ */
+.fundraiser-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--hrt-size-spacing-4);
+  padding-block: var(--hrt-size-spacing-3);
+  align-items: start;
+}
+
+/*
+ * Mobile: override v4.css so the rail is fixed/off-screen WITHOUT depending on body.v4-page.
+ * This ensures the mobile layout is correct even before React hydration adds the body class.
+ * The v4-page body class override is also present for cases where JS is running.
+ */
+.fundraiser-layout .rail {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  transform: translateY(110%);
+  transition: transform var(--hrt-time-transition) var(--hrt-ease-default);
+  max-height: 92vh;
+  overflow: auto;
+}
+
+/* Sheet open: slide rail up */
+body.sheet-open .fundraiser-layout .rail,
+.fundraiser-layout.sheet-open .rail {
+  transform: translateY(0);
+}
+
+/*
+ * CB-03: At 1024px+ the rail is a fixed overlay sheet (not in-flow), so the layout
+ * stays single-column. The 2-column grid that previously allocated a 380px rail column
+ * is removed — the rail being fixed means it no longer needs a grid column.
+ */
+
+/* Force .maincol to stay within its grid column (prevents 1fr from blowing out).
+ * Without min-width:0, CSS Grid's min-width:auto can let the column grow to fit
+ * the max-content size of the children (notably .studio's flex-shrink:0 cards). */
+.fundraiser-layout .maincol {
+  min-width: 0;
+}
+
+/* CB-72: Mobile: .maincol gets bottom padding to clear sticky CTA (56px bar + safe-area).
+ * Was spacing-7 (3.5rem=56px) which added excessive trailing space. Reduce to spacing-5
+ * (2.5rem=40px) so content ends cleanly while still clearing the stickycta bar. */
+@media (max-width: 1023px) {
+  .fundraiser-layout .maincol {
+    padding-bottom: calc(var(--hrt-size-spacing-5) + env(safe-area-inset-bottom));
+  }
+}
+
+/*
+ * Override v4.css which hides .stickycta with .v4-page .stickycta { display: none !important }.
+ * v4 design: the sticky CTA is hidden because the donatebar serves as the persistent donate CTA.
+ * However, the test suite (openDonateForm helper) uses the sticky CTA on mobile to open the
+ * donation sheet. We re-enable it on mobile so the E2E tests continue to work.
+ * On desktop (1024px+) it remains hidden (the donatebar "Donate now" button is always visible).
+ */
+/*
+ * Sticky mobile CTA bar layout styles (mock page-specific CSS, not in app's shared.css).
+ * These styles must be present for the stickycta to appear correctly on mobile.
+ */
+.stickycta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid var(--hrt-color-border-neutral-extra-subtle);
+  box-shadow: 0px -2px 6px #0000001a;
+  padding: var(--hrt-size-spacing-1) var(--hrt-size-spacing-2);
+  padding-bottom: calc(var(--hrt-size-spacing-1) + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .stickycta { display: none !important; }
+}
+
+/*
+ * Override v4.css which hides .stickycta with:
+ *   .v4-page .stickycta { display: none !important }
+ *
+ * Re-enable on mobile so the E2E openDonateForm helper (which taps the sticky Donate button
+ * to open the bottom-sheet) continues to work. The sticky CTA is the only way to open the
+ * donation sheet on mobile in the v4 layout.
+ */
+@media (max-width: 1023px) {
+  .v4-page .stickycta {
+    display: block !important;
+  }
+}
+
+/*
+ * CB-03: Desktop (1024px+) — the rail does NOT follow the scroll.
+ * The mock (fundraiser-v4.2.html) specifies that on desktop the donate card is also a
+ * fixed bottom-sheet (hidden until opened), NOT a sticky sidebar.
+ * The donatebar (always-visible bar below the nav) provides the persistent desktop CTA.
+ *
+ * v4.css already applies: .v4-page .rail { position: fixed; transform: translateY(110%) }
+ * so we intentionally do NOT override that with position:sticky here. The sheet-open
+ * class slides the rail into view on both mobile and desktop.
+ */
+@media (min-width: 1024px) {
+  .fundraiser-layout .rail {
+    /* On desktop: center the sheet like a modal (no sticky follow) */
+    max-width: 560px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(110%);
+    border-radius: var(--hrt-size-radius-xxxl);
+  }
+
+  body.sheet-open .fundraiser-layout .rail,
+  .fundraiser-layout.sheet-open .rail {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/*
+ * CB-70: When the returning-banner slot is empty (height:0 inner div), the PersonalizedSlot
+ * wrapper <div> can still have a residual line-height-derived height (up to ~8px) due to
+ * anonymous text node / inline formatting context.
+ * Fix: force the wrapper to use display:grid so it collapses to the child's true height.
+ * The data-personalized-slot="returning_banner" attribute is always set by PersonalizedSlot.
+ */
+[data-personalized-slot="returning_banner"] {
+  display: grid;
+  overflow: hidden;
+}
+
+/*
+ * CB-86: Prevent marks-intro__btn from overflowing its pane.
+ *
+ * Root cause: .btn has white-space:nowrap and .marks-intro__btn[disabled] has flex:none,
+ * so the long "Leave your sun — do one thing first" label (323px intrinsic) exceeds the
+ * pane interior on narrow viewports (e.g. mobile pane=342px, padding=24px each side →
+ * 294px interior; button overflows right by ~5px).
+ *
+ * Fix: constrain to pane width and allow label to wrap when it must. Both the disabled
+ * (non-participant, long label) and enabled (participant, "Edit my sun", short label)
+ * states benefit — the short label never wraps in practice.
+ */
+.fundraiser-layout .marks-intro .marks-intro__btn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
+}
