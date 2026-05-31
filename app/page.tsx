@@ -21,17 +21,10 @@ import { Scene7Stack } from '@/components/landing/Scene7Stack';
 export default function LandingPage() {
   return (
     <>
-      {/* Skip-to-main for screen readers.
-          sr-only hides visually at rest; focus:not-sr-only reveals on keyboard focus.
-          NO inline position/top/left/zIndex — those override sr-only clip and would
-          place the link over the DeckNav brand button (CB-65). Tailwind handles all
-          positioning via the focus-reveal utility classes below. */}
-      <a
-        href="#scene-1"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-[#232323] focus:text-white focus:rounded-full focus:px-5 focus:py-2 focus:text-sm focus:font-bold focus:no-underline"
-      >
-        Skip to content
-      </a>
+      {/* CB-105: removed the "Skip to content" link — Scene 1's always-visible
+          "Skip to demo →" (Scene1Hook, top-left → #scene-6) already serves the keyboard
+          skip-link role, and the focus-revealed "Skip to content" appeared at the same
+          top-left spot, overlapping it. One skip link now, no overlap. */}
 
       {/* Cross-surface top bar is mounted once in app/layout.tsx (UnifiedNav). */}
 
