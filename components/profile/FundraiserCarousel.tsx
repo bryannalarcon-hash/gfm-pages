@@ -106,16 +106,14 @@ export function FundraiserCarousel({
   organizerFirstName,
   overlay,
 }: FundraiserCarouselProps) {
-  if (fundraisers.length === 0) return null;
-
-  const headingName = organizerFirstName ?? profileHandle;
+  // Hooks must run unconditionally and in a stable order on every render — declare them
+  // BEFORE any early return (react-hooks/rules-of-hooks; strict in `next build`).
+  const total = fundraisers.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
   // Visible cards: ~1.1 on mobile (80% card shows peek of next), 2 on tablet+
   // We move by 1 card at a time.
-  const total = fundraisers.length;
-
   const goTo = useCallback((idx: number) => {
     // Wrap-around: previous from 0 goes to last, next from last goes to 0
     const wrapped = ((idx % total) + total) % total;
@@ -136,6 +134,11 @@ export function FundraiserCarousel({
 
   const handlePrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
   const handleNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
+
+  // Nothing to render with no fundraisers — early return AFTER the hooks above.
+  if (fundraisers.length === 0) return null;
+
+  const headingName = organizerFirstName ?? profileHandle;
 
   return (
     <Instrumented attrs={overlay} regionLabel="fundraiser-carousel-p5">
