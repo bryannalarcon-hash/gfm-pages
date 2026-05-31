@@ -59,250 +59,7 @@
 > - **Refs:** <spec docs / sections / mock files>
 > ```
 
-### CB-65 — Deck skip-content button overlays the brand button
-- **Type / Surface / Size:** bug · slide-deck (a11y) · S
-- **Prereqs:** —
-- **Important files (candidates):** `components/landing/DeckNav.tsx`, `app/layout.tsx` / skip-link, `app/page.tsx`
-- **Current:** A "skip to content" button overlays the "GoFundMe redesign" brand button on the slide deck.
-- **Desired:** The skip-content link stays visually hidden until focused (standard a11y pattern) and never overlaps the brand button.
-- **Acceptance:** Skip link hidden until keyboard-focused, positioned clear of the brand; brand remains clickable (CB-64); a11y test passes (`test-plan.md §5`).
-- **Refs:** `design-slide-deck.md`, CB-64
-
-### CB-66 — Mobile-view pill must not appear on dashboard or deck
-- **Type / Surface / Size:** bug · mobile (demo) · S
-- **Prereqs:** CB-58
-- **Important files (candidates):** the CB-58 mobile-frame toggle component, route layouts for `/dashboard` and `/`
-- **Current:** The mobile-view pill (CB-58) shows on the analytics board and the slide deck.
-- **Desired:** The mobile-view toggle exists only on the three product pages, not on `/dashboard` or `/` (deck).
-- **Acceptance:** No mobile pill on `/dashboard` or `/`; present on fundraiser/community/profile.
-- **Refs:** CB-58
-
-### CB-67 — Sun initial must center inside the half-circle, no clipping
-- **⚠ SUPERSEDED by CB-78 — DO NOT BUILD.** Decision reversed: remove the letters entirely instead of centering them.
-- **Type / Surface / Size:** bug · suns · S
-- **Prereqs:** CB-45
-- **Important files (candidates):** `components/marks/SunMark.tsx`
-- **Current:** The letter is centered on the **whole** image (incl. rays), not the dome, and gets clipped/cropped by the half-circle.
-- **Desired:** The initial centers within the **half-circle (dome)** portion only and fits entirely inside it — no clipping outside, no cropped glyph.
-- **Acceptance:** Screenshot-verified: initial sits centered in the dome and is fully legible at sun sizes; no clipping; anonymous suns blank.
-- **Refs:** `feature-contribution-board.md`, CB-45
-
-### CB-70 — Mobile: gap left after the orange ribbon hides; donate bar should rise
-- **Type / Surface / Size:** bug · mobile (fundraiser) · S
-- **Prereqs:** CB-58
-- **Important files (candidates):** `components/fundraiser/fundraiser-layout.css`, `components/fundraiser/FundraiserPage.tsx`, `components/marks/GrewRibbon.tsx`
-- **Current:** In mobile view, when the orange personalized ribbon disappears it leaves an empty gap.
-- **Desired:** When the ribbon collapses, the donate bar moves up to fill the space (no dead gap) — layout-preserving collapse, not a hole.
-- **Acceptance:** Mobile: ribbon-present and ribbon-absent states both look intentional; no residual gap; donate bar reflows up.
-- **Refs:** `mocks/*mobile*.html`, CB-58
-
-### CB-71 — Mobile: reflow UI for mobile (stack vertically; carousel → prev/next buttons)
-- **Type / Surface / Size:** bug · mobile · M
-- **Prereqs:** CB-58
-- **Important files (candidates):** route/page layouts + CSS, `components/profile/ShareSpread.tsx` / share carousel, `components/fundraiser/*`, `components/community/*`
-- **Current:** Mobile view doesn't resize the UI for mobile text handling — side-by-side elements stay cramped and the share carousel is touch-swipe only.
-- **Desired:** On mobile, stack elements vertically where appropriate and replace the swipe carousel with left/right buttons.
-- **Acceptance:** Mobile layout stacks instead of cramming; carousel has prev/next controls; matches `mocks/*mobile*.html`.
-- **Refs:** `mocks/*mobile*.html`, CB-58
-
-### CB-72 — Mobile: excessive trailing whitespace
-- **Type / Surface / Size:** bug · mobile · S
-- **Prereqs:** CB-58
-- **Important files (candidates):** route/page layouts + CSS, mobile-frame container (CB-58)
-- **Current:** Mobile view extends excessive whitespace downward.
-- **Desired:** Content ends cleanly; no large dead vertical space at the bottom in mobile view.
-- **Acceptance:** Full-page mobile screenshot shows no excessive trailing whitespace on any page.
-- **Refs:** CB-58, CB-74
-
-### CB-73 — Fundraiser mobile: center "Edit my sun" button + fix text bunching
-- **Type / Surface / Size:** bug · mobile (fundraiser) · S
-- **Prereqs:** CB-58, CB-34
-- **Important files (candidates):** `components/marks/SunsLayer.tsx` / `SunCreateModal.tsx`, `components/fundraiser/fundraiser-layout.css`
-- **Current:** On fundraiser mobile, the Edit-my-sun button isn't centered and text bunches.
-- **Desired:** Center the Edit/Create sun button on mobile and resolve the text bunching.
-- **Acceptance:** Mobile screenshot shows centered button + readable, unbunched text.
-- **Refs:** `mocks/*mobile*.html`, CB-34, CB-58
-
-### CB-74 — Mobile QA: full-page screenshots + UX eval for every page
-- **Type / Surface / Size:** bug (QA umbrella) · mobile · M
-- **Prereqs:** CB-58
-- **Important files (candidates):** Playwright mobile capture (`tests/e2e/*`), `playwright.config.ts`
-- **Current:** No systematic mobile UX check.
-- **Desired:** For **all** mobile views, screenshot the entire page (chunked or full-height) and evaluate UX; fix issues or log them as new CB items.
-- **Acceptance:** Full-page mobile screenshots captured per page (fundraiser/community/profile); UX findings either fixed or filed; recorded in the Done entry.
-- **Refs:** `mocks/*mobile*.html`, `test-plan.md §5/§12`, CB-58
-
-### CB-75 — Update share buttons: clean truncation + smaller on mobile
-- **Type / Surface / Size:** bug · mobile (fundraiser) · S
-- **Prereqs:** CB-54, CB-58
-- **Important files (candidates):** `components/fundraiser/UpdatesSection.tsx`, `components/shared/ShareSheet.tsx`
-- **Current:** On mobile, the per-update platform share buttons cut one button in half.
-- **Desired:** Truncate the row cleanly (no half-cut button) and make the share buttons smaller overall.
-- **Acceptance:** Mobile: no clipped/half share button; buttons sized to fit; matches mobile mock.
-- **Refs:** `mocks/*mobile*.html`, CB-54
-
-### CB-76 — Profile pictures cascade everywhere the PFP is used
-- **Type / Surface / Size:** bug · personalization · M
-- **Prereqs:** CB-59
-- **Important files (candidates):** `components/shared/Avatar.tsx`, `fixtures/personas.ts`, `components/fundraiser/DonorFeed.tsx`/`UpdatesSection.tsx`, `components/community/ActivityTab.tsx`, `components/profile/ActivityFeed.tsx`, sun attribution
-- **Current:** The persona profile pictures (CB-59) don't propagate to every place a PFP would appear.
-- **Desired:** A named persona's PFP cascades everywhere it's used — e.g. Sarah's PFP on her posts/updates in the fundraiser and community pages, in feeds, and on attributed suns.
-- **Acceptance:** Named personas show their PFP consistently across posts/feeds/suns; anonymous keep the generic icon; verified across pages.
-- **Refs:** `design-personas.md`, CB-59
-
-### CB-77 — Persona-derived sun controls are wrong (sharer can't access sharer controls)
-- **Type / Surface / Size:** bug · suns + personalization · M
-- **Prereqs:** CB-51
-- **Important files (candidates):** `components/marks/SunCreateModal.tsx`, `components/marks/SunsLayer.tsx`, `lib/personalization/*`, `lib/personas/*`
-- **Current:** Personas don't get the sun controls their relationship implies — e.g. Mike (prolific sharer) can't access sharer-level controls on his sun.
-- **Desired:** Sun controls derive from the active persona's actual roles: a sharer gets sharer controls (flat colors per CB-51), a contributor gets contributor controls (gradients), both → both. Mike sees sharer controls.
-- **Acceptance:** Each persona's available sun controls match their roles (sharer/contributor/both); verified live per persona; matches `feature-contribution-board.md §3`.
-- **Refs:** `feature-contribution-board.md §3`, `design-personas.md`, CB-51, CB-34
-
-### CB-80 — Still no highlighting on your own / the sharer's sun — REPEAT
-- **Type / Surface / Size:** bug · suns · M
-- **Prereqs:** —
-- **Important files (candidates):** `components/marks/SunsLayer.tsx`, `components/marks/SunMark.tsx`, `lib/marks/*` (attribution)
-- **Current:** No ring/label appears on your own sun, nor the sharer's, on arrival via a share link. **Recurrence of CB-05 / CB-46.**
-- **Desired:** The relevant sun gets a ring + "Your Sun" / "<Sharer's Initial>'s Sun" label, per CB-46.
-- **Acceptance:** Screenshot-verified ring + label on the correct sun for current user and share-arrival; both ends.
-- **Refs:** `feature-contribution-board.md`, CB-05, CB-46
-- **⚠ Repeat — handle thoroughly:** this has failed verification twice. Trace contribution/share-arrival → which sun → ring render. Prove it with a screenshot.
-
-### CB-81 — Community share window missing activity pictures
-- **Type / Surface / Size:** bug · community · S
-- **Prereqs:** CB-76
-- **Important files (candidates):** `components/community/ShareStudio.tsx`, `components/shared/Avatar.tsx`
-- **Current:** The share window on community is missing the pictures for the activity entries.
-- **Desired:** Activity entries in the community share window show their PFPs (per CB-76 cascade).
-- **Acceptance:** Activity pictures render in the community share window; matches mock.
-- **Refs:** `mocks/community-v4.2.html`, CB-76
-
-### CB-82 — Share icons: email → mail glyph, copy-link → link glyph
-- **Type / Surface / Size:** bug · share (cross-page) · S
-- **Prereqs:** CB-54
-- **Important files (candidates):** `components/shared/ShareSheet.tsx`, `components/community/ShareStudio.tsx`, icon set (cf. `mocks/icons.js`)
-- **Current:** Email and copy-link share controls don't use proper glyphs.
-- **Desired:** Email → a small mail symbol; copy-link → a URL/link glyph (link/paperclip). Consistent with CB-54's platform logos.
-- **Acceptance:** Email shows a mail icon; copy-link shows a link icon; no text/color placeholders.
-- **Refs:** `mocks/*` (icons), CB-54, CB-50
-
-### CB-83 — Community ribbon messages not personalized enough (Sarah/Priya/Janahan)
-- **Type / Surface / Size:** bug · personalization (community) · M
-- **Prereqs:** CB-27
-- **Important files (candidates):** `components/community/*` (C2 "since your last visit" ribbon), `lib/personalization/*`, `design-personas.md` (community grid)
-- **Current:** The community ribbon's personalized messages are too generic for Sarah, Priya, and Janahan.
-- **Desired:** Distinct, history-aware ribbon copy for each of those three personas (per the community grid in `design-personas.md`); deepen per CB-47's history+activity+platform approach.
-- **Acceptance:** Each of Sarah/Priya/Janahan shows clearly distinct, fitting ribbon copy; verified live per persona.
-- **Refs:** `design-personas.md` (community C2 row), `strategy-personalization.md`, CB-47, CB-27
-
-### CB-84 — Profile overlay: not all highlights open their metric card
-- **Type / Surface / Size:** bug · overlay (profile) · M
-- **Prereqs:** —
-- **Important files (candidates):** `components/overlay/Instrumented.tsx`, `components/overlay/MetricBlob.tsx`, `components/profile/*`
-- **Current:** Clicking highlighted features on the profile page doesn't always bring up a metric card.
-- **Desired:** Every highlighted feature on profile opens its respective card on click (no dead highlights). Extends CB-09.
-- **Acceptance:** Clicking each profile highlight opens its card; screenshot/DOM-verified across all profile highlights.
-- **Refs:** `design-overlay.md`, CB-09, CB-26
-
-### CB-85 — Profile mobile is completely broken; revamp for mobile
-- **Type / Surface / Size:** bug · mobile (profile) · L
-- **Prereqs:** CB-58
-- **Important files (candidates):** `components/profile/ProfilePage.tsx`, `ProfileHero.tsx`, `profile.css`, `ShareSpread.tsx`, `SunsBoard.tsx`, `StickyCompactHeader.tsx`
-- **Current:** Profile mobile view is completely broken — it just shrinks the desktop layout with the same piping.
-- **Desired:** A real mobile-friendly profile layout (stack/reflow per the mobile mock), not an auto-fit of the desktop DOM. Same features retained.
-- **Acceptance:** Full-page mobile screenshot of profile is usable + matches `mocks/*mobile*.html`; all features present; UX eval clean (CB-74).
-- **Refs:** `mocks/*mobile*.html`, CB-71, CB-74, CB-58
-
-### CB-86 — Fundraiser sun-create button clips outside the pane (pre-creation)
-- **Type / Surface / Size:** bug · suns (fundraiser) · S
-- **Prereqs:** —
-- **Important files (candidates):** `components/marks/SunCreateModal.tsx`, `components/fundraiser/fundraiser-layout.css`
-- **Current:** When no sun has been made yet, the sun-window button clips outside the pane.
-- **Desired:** The button stays inside the pane in the empty/create state (and all states).
-- **Acceptance:** Screenshot-verified: button fully within the pane in the no-sun-yet state; desktop + mobile.
-- **Refs:** `mocks/fundraiser-v4.2.html`, CB-57
-
-### CB-87 — Fundraiser share window too long + excessive whitespace
-- **Type / Surface / Size:** bug · fundraiser (share) · S
-- **Prereqs:** —
-- **Important files (candidates):** `components/shared/ShareSheet.tsx`, `components/fundraiser/fundraiser-layout.css`
-- **Current:** The fundraiser sharing window is still too long with excessive whitespace.
-- **Desired:** Tighten the share window to fit content; remove dead whitespace; fits the viewport.
-- **Acceptance:** Share window is compact (no excess whitespace), fits desktop + mobile; matches mock.
-- **Refs:** `mocks/fundraiser-v4.2.html`, CB-57
-
-### CB-88 — "Ripple" share window doesn't update per persona; active state should glow green + show counts
-- **Type / Surface / Size:** bug · personalization (share) · M
-- **Prereqs:** CB-80
-- **Important files (candidates):** `components/shared/ShareSheet.tsx` (the "watch your ripple grow" panel), `lib/marks/*` (share attribution counts), `lib/personalization/*`
-- **Current:** The "Share once and watch your ripple grow / we'll show you how many people your share brought — and how much they raised" panel never updates for any persona.
-- **Desired:** Per the active-share mock state: when the user's share is active, the panel **glows green** and shows the actual numbers (# people the share brought + amount they raised), personalized per persona.
-- **Acceptance:** Active-share state matches the mock (green glow + real counts); each persona shows its own numbers; screenshot-verified.
-- **Refs:** `mocks/fundraiser-v4.2.html` (active share state), `feature-contribution-board.md`, CB-80, CB-69
-
-### CB-89 — Metric overlay breaks on mobile; must highlight the same features
-- **Type / Surface / Size:** bug · overlay (mobile) · M
-- **Prereqs:** CB-58
-- **Important files (candidates):** `components/overlay/OverlayLayer.tsx`, `components/overlay/MetricBlob.tsx`, `components/overlay/Instrumented.tsx`
-- **Current:** The metric overlay breaks in mobile view.
-- **Desired:** Overlay works in mobile view and highlights the **same features** as the desktop page (analogous components), with cards reachable.
-- **Acceptance:** Mobile overlay highlights == desktop highlights per page; cards open; screenshot-verified on mobile.
-- **Refs:** `design-overlay.md`, CB-58, CB-68, CB-71
-
-### CB-91 — Suns stack as parallel straight lines, not an organic mass (CB-90 fallout)
-- **Type / Surface / Size:** bug · suns · M
-- **Prereqs:** CB-90
-- **Important files (candidates):** `lib/marks/engine.ts` (`packEven`), `tests/unit/marks-engine.test.ts`
-- **Current:** CB-90's column-grid placement (`x = cellW·(c+0.5)` + only ±0.3·cellW jitter) lines suns up into straight vertical columns — most visible at the sparse top (2 columns → 2 rigid lines). Reads as a grid, not a crowd "piling" on each other.
-- **Desired:** Organic mass — suns cluster/overlap like the v4.2 reference (no visible column rails). Break the grid with row-to-row column offset (brick/hex stagger), stronger per-sun jitter, and/or allowed overlap so they read as a heap, while keeping the bottom-dense → top-sparse gradient and determinism (SSR↔client parity, zero CLS).
-- **Acceptance:** Live screenshot of both gutters shows no straight-line column rails at any depth; bottom reads as a packed mass; gradient + crowd (CB-90) preserved; engine tests green; no hydration mismatch.
-- **Refs:** `screenshots/*physics board*.pdf`, CB-90, CB-44
-
-### CB-92 — Demo funding slider changes sun SIZE but not COUNT (CB-30 regression)
-- **Type / Surface / Size:** bug · suns (demo) · M
-- **Prereqs:** CB-30, CB-90
-- **Important files (candidates):** `lib/marks/engine.ts` (`packEven` sparsity branch), `components/marks/SunsLayer.tsx` (pad generation vs cap), `components/marks/SunsDemoControl.tsx`
-- **Current:** Moving the fundedPct demo slider rescales sun size but the on-screen **count** doesn't change. Suspected root cause: SunsLayer pads marks UP TO the cap, so `marks.length === maxSuns` → `packEven` takes the `marks.length <= maxSuns ? capTotal` branch and **skips the sparsity scaling entirely** — the count is pinned to the cap regardless of fundedPct.
-- **Desired:** Per CB-30, fundedPct drives BOTH count (sparser at low %, denser at high %) AND size. The decorative field count must visibly change as the slider moves.
-- **Acceptance:** Live DOM `[data-mark-id]` count measured at low vs high fundedPct differs clearly (≥1.5×); size also changes; deterministic. Verified by measurement, not self-report.
-- **Refs:** `feature-contribution-board.md §3`, CB-30, CB-90
-
-### CB-93 — Funding % must update the on-screen progress bar
-- **Type / Surface / Size:** bug · fundraiser · S
-- **Prereqs:** —
-- **Important files (candidates):** `components/fundraiser/FundraiserPage.tsx`, the raised/goal progress-bar component, `components/marks/SunsDemoControl.tsx` (shared fundedPct source)
-- **Current:** The funding-percentage demo control changes the suns but the fundraiser's raised/goal **progress bar** on screen does not move to reflect the new funded %.
-- **Desired:** The progress bar fill (and any "$X of $Y / N% funded" label) updates live to match the active fundedPct, in sync with the suns.
-- **Acceptance:** Moving the funding control visibly moves the progress-bar fill + updates the % label; screenshot/DOM-verified at ≥2 funded levels.
-- **Refs:** `mocks/fundraiser-v4.2.html`, CB-30
-
-### CB-96 — Profile mobile only shows PYMK; doesn't match the mobile PDF
-- **Type / Surface / Size:** bug · mobile (profile) · L
-- **Prereqs:** CB-85
-- **Important files (candidates):** `components/profile/ProfilePage.tsx`, `ProfileHero.tsx`, `profile.css`, `ActivityFeed.tsx`, `FundraiserCarousel.tsx`, `SunsBoard.tsx`, mobile-frame container (CB-58)
-- **Current:** Profile mobile view renders only the PYMK window(s) — most of the page is missing — and it doesn't reflect the mobile PDF scan in `screenshots/`.
-- **Desired:** Profile mobile shows the full page (hero, activity, carousel, board, PYMK, etc.), laid out to match the **mobile PDF reference** in the screenshot folder. Supersedes the partial CB-85.
-- **Acceptance:** Full-page mobile screenshot of profile matches the mobile PDF scan (all sections present, ordered/sized per the reference); UX-eval clean (CB-74).
-- **Refs:** `screenshots/` (mobile PDF), `mocks/*mobile*.html`, CB-85, CB-74
-
-### CB-97 — Profile background should not have suns dropping in
-- **Type / Surface / Size:** bug · profile (suns) · S
-- **Prereqs:** —
-- **Important files (candidates):** `components/profile/ProfilePage.tsx` / `SunsBoard.tsx`, `components/marks/SunsLayer.tsx` (ambient layer mount on profile)
-- **Current:** The profile section background has suns dropping in (ambient sun field), which doesn't belong there.
-- **Desired:** No ambient/dropping suns in the profile background. (Suns belong on fundraiser/community boards, not as the profile page backdrop — confirm against the profile mock.)
-- **Acceptance:** Profile renders with no falling/ambient suns in the background; screenshot-verified; fundraiser/community suns unaffected.
-- **Refs:** `mocks/profile-v4.2.html`, `feature-contribution-board.md`
-
-### CB-98 — Share messages not per-person on profile + community
-- **Type / Surface / Size:** bug · personalization (profile + community) · M
-- **Prereqs:** CB-47, CB-27
-- **Important files (candidates):** `components/shared/ShareSheet.tsx`, `components/community/ShareStudio.tsx`, `components/profile/ShareSpread.tsx`, `lib/personalization/*`, `lib/personas/*`, `design-personas.md`
-- **Current:** The share messages on the profile and community pages aren't personalized per persona — everyone gets the same copy.
-- **Desired:** Each persona gets their **own** share message on both profile and community (history+activity+platform aware, per CB-47), live on persona switch. Extends the fundraiser-side CB-69 to these two surfaces.
-- **Acceptance:** Switching personas changes the share message on profile AND community for each persona; screenshot-verified per persona; L3.5 + tone tests pass (`test-plan.md §3/§4.4`).
-- **Refs:** `design-personas.md` (community/profile grids), `strategy-personalization.md`, CB-47, CB-27, CB-69
+_All previously-listed To Do items have been completed and live-verified — see the **Done** section below (canonical record). The board is currently **empty of open items**; the planner adds new `CB-NN` blocks here using the template above when scoped._
 
 ---
 
@@ -324,7 +81,7 @@
 > - **Notes / blockers:** <inline; don't go silent>
 > ```
 
-_**CB-01 … CB-64 Done** + the two escalated REPEATs **CB-68, CB-69 Done** (root-caused + live-verified). **798 unit green, tsc clean, E2E 75 pass + 1 known SSE cold-flake.** Remaining To Do (10): CB-65 (deck skip-link a11y), CB-66 (mobile pill gating), CB-67 (sun initial inside dome), CB-76 (PFP cascade) + the **mobile-reflow cluster CB-70/71/72/73/74/75** (CB-74 is a full-page mobile screenshot/UX pass that gates the others). The mobile cluster is a coherent dedicated effort — best run as its own wave with mobile screenshots, after CB-58's frame._
+_No items in progress. **CB-01 … CB-108 are Done** (root-caused + live-verified; the mobile-reflow cluster CB-70/72/73/75 was verified resolved by the CB-71/85/96 rework, no code change needed). Latest: CB-107 (overlay click-eater on /dashboard), CB-108 (community overlay full-page suns ring → dim restored). ~795 unit + integration green, tsc clean, E2E green (known SSE cold-flake passes isolated)._
 
 ---
 
@@ -1042,3 +799,83 @@ Full Playwright run (174 tests, chromium-desktop + mobile). Desktop green except
 - **Completed:** 2026-05-31 · personalization (profile + community) · **Files:** fixtures/shareCopyProfileCommunity.ts (new), components/profile/ShareSpread.tsx, components/community/ShareStudio.tsx, tests/unit/cb98-persona-share-copy.test.tsx (+ cb16/cb32 updated for fixture priority)
 - **Fix:** new static matrices `PROFILE_SHARE_COPY` + `COMMUNITY_SHARE_COPY` (per-persona × channel, no request-path LLM — CB-47 pattern, profile-/community-flavored). ShareSpread resolves `PROFILE_SHARE_COPY[user.slug]?.[channel] ?? copyByChannel ?? GENERIC` (owner voice preserved); ShareStudio now calls `usePersona()` and resolves `COMMUNITY_SHARE_COPY[viewer.slug]?.[channel] ?? shareCopy` (CB-81 avatars + CB-82 glyphs intact). Reactive on persona switch.
 - **Verified (independent live DOM):** profile → 3 distinct strings (Sarah/Mike/Priya); community → 3 distinct strings. 25 new tests; full suite **914 pass**, tsc clean. Extends the fundraiser CB-69 to both surfaces.
+
+### CB-99 — Mobile overlay mode blocked scrolling — DONE
+- **Completed:** 2026-05-31 · bug · overlay (mobile) · **Files:** components/overlay/OverlayLayer.tsx
+- **Root cause:** the dim scrim SVG was `position:fixed; z:900; pointerEvents:'all'` (top-most clickable surface) → it swallowed touch events, so you couldn't scroll while the overlay was ON on mobile.
+- **Fix:** `pointerEvents:'none'` on the scrim. The document-level capture-phase click handler still intercepts TAPS by coordinate (a tap → `click` → preventDefault/stopPropagation suppresses the underlying action + opens the metric card); a scroll is `touchmove` (never a click) → passes through. So scroll works AND taps are still intercepted.
+- **Verified (live, 390px, overlay ON):** wheel scroll moved scrollY 0→1200. 06-cb09 overlay-clickthrough **22/22** (incl. the guardrail "tap suppresses underlying action") — taps still work. tsc clean.
+
+### CB-100 — Persona pill duplicated when entering mobile view — DONE
+- **Completed:** 2026-05-31 · bug · mobile (demo) · **Files:** components/shared/MobileFrameToggle.tsx, app/globals.css
+- **Root cause:** the persona/overlay pill is mounted in app/layout.tsx OUTSIDE MobileFrameToggle (z:1000, above the frame backdrop). With CB-96's iframe frame, the iframe renders its OWN pill → two pills.
+- **Fix:** MobileFrameToggle now sets `body.mobile-frame-open` while the frame is open; CSS `body.mobile-frame-open [data-overlay-pill]{display:none}` hides the OUTER (parent-document) pill. The iframe is a separate document (no class) so its pill stays → exactly one pill.
+- **Verified (live):** frame open → visible parent pills = 0 (node present but display:none), body class set; iframe pill remains.
+
+### CB-101 — Funding % slider now updates Priya's returning banner — DONE
+- **Completed:** 2026-05-31 · bug · personalization (fundraiser) · **Files:** components/fundraiser/FundraiserPage.tsx
+- **Root cause:** the `returning_banner` slot received the static SSR `page` (`pageState.raisedPct`), so Priya's "…X% funded…" message didn't react to the demo:funding% slider (only the goalbar/suns did, via CB-92/93).
+- **Fix:** memoized `pageWithLivePct` injects the live `demoFundedPct` into `pageState.raisedPct` and passes it to the returning_banner slot (resolver at slots.ts:163 reads raisedPct). null override → SSR page unchanged.
+- **Verified (live, returning_lapsed):** dragging the slider changed the banner "…now 78% of the way there" → "…now 20% of the way there". 914 unit green, tsc clean.
+
+### CB-102 — Overlay highlights now pop on mobile (oversized cutouts clamped) — DONE
+- **Completed:** 2026-05-31 · bug · overlay (mobile) · **Files:** components/overlay/OverlayLayer.tsx
+- **Root cause:** `regionRect` returned the raw rect; a region wrapping a horizontally-scrollable carousel unioned its OFF-screen cards → a rect ~1130px wide. On mobile (390/364px) that cutout hole was far wider than the viewport, so the dim scrim had almost no area left → nothing dimmed → highlights didn't pop ("shaded like the rest").
+- **Fix:** clamp `regionRect` to the viewport `[0,innerWidth]×[0,innerHeight]`. Desktop rects already sit within the wide viewport (unchanged); mobile oversized rects clamp.
+- **Verified (pixel-measured, 390px, overlay ON):** holes now ≤390px (was 1130); non-hole band 28 luminance DARKER than overlay-off (the 35% `--overlay-dim` paints), highlight band identical to overlay-off (popping). Applies in the iframe too (clamps to innerWidth 364).
+
+### CB-103 — Donate sheet now has an X to close it — DONE
+- **Completed:** 2026-05-31 · bug · fundraiser (donate) · **Files:** components/fundraiser/FundraiserPage.tsx
+- **Root cause:** DonationCard renders its close (X) button ONLY when `onClose` is provided (CB-57); the rail/sheet DonationCard opened from the donatebar wasn't passed `onClose` → no X.
+- **Fix:** pass `onClose={handleCloseSheet}` (the existing sheet-close handler, also used by the backdrop) to the rail DonationCard → the X renders + closes the sheet.
+
+### CB-104 — Demo funding slider + persona pill live OUTSIDE the phone frame — DONE
+- **Completed:** 2026-05-31 · bug · mobile (demo) · **Files:** lib/mobileFrame.ts (new), components/shared/MobileFrameToggle.tsx, components/marks/SunsLayer.tsx, components/fundraiser/FundraiserPage.tsx, app/globals.css
+- **Root cause:** CB-96 made the mobile frame a real IFRAME (separate document), so the in-page demo controls (funding slider, persona pill) rendered INSIDE the phone screen instead of as parent chrome like the "Mobile view" pill.
+- **Fix:** `isInMobileFrame()` = `window.self !== window.top` (SSR-safe). Inside the iframe, SunsLayer suppresses its funding slider and OverlayPill renders null. The PARENT (MobileFrameToggle chrome) renders a funding slider (bottom-left, outside the bezel) that writes `DEMO_FUNDED_PCT_KEY` to localStorage; the parent persona pill stays visible (removed the CB-100 hide rule). Cross-document sync: persona via the existing overlay-context `storage` listener (free); funding via FundraiserPage reading localStorage + a `storage` listener — ONLY when `isInMobileFrame()`, so the normal page's funding state (CB-92/93/101) is untouched.
+- **Verified (windowless headless):** frame open → funding slider + persona pill NOT visible inside the iframe; parent has both outside the bezel; moving the PARENT slider drove the iframe goalbar `78%→20%` (cross-doc funding sync). No regression: 914 unit green + CB-92/93/101 E2E 14/14 (05-mobile + 03 mobile). tsc clean.
+- **Note (process):** browser pop-ups on Windows during this work were traced to a SEPARATE "meridian" project's Playwright script (localhost:3100) borrowing this repo's node_modules — not gofundme. Going forward all Playwright verification runs headless with `DISPLAY=` unset + `--reporter=line` (no HTML-report auto-open under WSLg).
+
+### CB-105 — Remove the deck's redundant "Skip to content" link (overlap) — DONE
+- **Completed:** 2026-05-31 · bug · slide-deck (a11y) · **Files:** app/page.tsx, tests/unit/cb65-skip-link.test.tsx
+- **Why:** the deck had TWO skip affordances — the focus-reveal "Skip to content" (→ #scene-1, app/page.tsx) AND Scene 1's always-visible "Skip to demo →" (→ #scene-6, Scene1Hook). Both sit top-left, so focusing "Skip to content" revealed it on top of "Skip to demo" (overlap). The CB-65 focus-reveal fix reduced but didn't eliminate this.
+- **Fix:** removed the "Skip to content" link entirely. "Skip to demo →" remains as the single keyboard skip-link (jumps past the hook straight to the demo) — a11y preserved, no overlap.
+- **Verified (SSR HTML, no browser):** `curl /` → "Skip to content" count 0, "Skip to demo" count 1. cb65 unit test rewritten to assert the removal (2/2). tsc clean.
+
+### CB-106 — Dashboard demo-data toggle unclickable when arriving via #anchor deep link — DONE
+- **Completed:** 2026-05-31 · bug · dashboard · **Files:** app/dashboard/page.tsx, tests/e2e/10-cb106-dashboard-toggle.spec.ts
+- **Reported:** "the demo data button doesn't flip" — only when arriving from an overlay card that deep-links to `/dashboard#repeat-visits` (plain /dashboard worked).
+- **Root cause:** the dashboard page-header (containing the demo-data toggle + date/persona selects) was `position:sticky; top:0; z:30`, same `top:0` as the 56px sticky UnifiedNav (`z:40`). At scrollY 0 they stack (no overlap → clickable), but the #anchor deep link SCROLLS the page, so both pin to top:0 → the nav's links (e.g. "Profile" → /u/janahan, z:40) cover the toggle (z:30). Taps hit the nav anchor, not the button.
+- **Fix:** the dashboard header now sticks at `top:56` (just below the nav) instead of `top:0` → no overlap at any scroll position.
+- **Verified (windowless):** at `/dashboard#repeat-visits` after scrolling, the toggle centre's `elementFromPoint` is the button (was the nav `<a>`); click flips `off→on` (aria-pressed true) + stat cards `—`→values. New E2E `10-cb106-dashboard-toggle.spec.ts` passes (desktop). tsc clean.
+
+### CB-107 — Demo-data toggle dead when the metric overlay was left ON (invisible click-eater) — DONE
+- **Completed:** 2026-05-31 · bug · dashboard / overlay · **Files:** components/overlay/OverlayLayer.tsx, tests/e2e/11-demo-data-toggle-screens.spec.ts (new)
+- **Reported:** "the demo data button isn't working" — pill doesn't change AT ALL, survives a hard reload. Distinct from CB-106 (that was the #anchor-scroll nav overlap; this reproduces on PLAIN /dashboard too).
+- **Root cause:** `OverlayLayer` suppresses the overlay on /dashboard via `if (pathname?.startsWith('/dashboard')) return null` — but that render guard runs AFTER the hooks. The document capture-phase click handler (installed in a `useEffect` gated only on `overlayOn`) therefore still installed on /dashboard whenever `overlayOn` was persisted `true` in localStorage. That handler `stopPropagation()`+`preventDefault()`s every click except the overlay pill / blob card, so it silently swallowed the demo-data toggle (and every other dashboard control) — with NO visible dim scrim to explain why. A clean browser starts `overlayOn=false`, so it only bit users who'd toured a product page with the overlay on, then opened the dashboard; it survived reload because `overlayOn` persists.
+- **Fix:** bail the click-capture effect early on /dashboard too (`if (pathname?.startsWith('/dashboard')) return;` inside the effect, with `pathname` added to its deps) — mirroring the render guard. The overlay's real click-through on product pages (/f, /communities, /u) is untouched.
+- **Verified (windowless headless):** REPRO — with `localStorage.overlayOn='true'` on /dashboard, toggle click did NOT flip (`aria-pressed` stayed false), `visibleDimEls=0` (invisible eater). POST-FIX — toggle flips `off→on→off`, data goes `—`→`4820/1985/…` & `0→7 visitors`→`—` (screenshots /tmp/demo-toggle-shots/). New E2E `11-demo-data-toggle-screens.spec.ts` (3 cases: plain, #repeat-visits deep link, overlayOn-persisted regression) all green. No regression: overlay click-through 06-cb09 11/11 (the one community blip is the known serial-load flake — passes isolated). tsc clean.
+
+### CB-108 — Community overlay: full-page suns ring overshot the box + killed the dim — DONE
+- **Completed:** 2026-05-31 · bug · community / overlay · **Files:** components/community/CommunitySunsSection.tsx, components/community/CommunityPage.tsx, tests/e2e/12-community-overlay-dim.spec.ts (new)
+- **Reported:** "the 'share-rate' metric highlight extends to the right way past the actual box" + "the overlay metric mode on community does not shade non-highlighted objects."
+- **Root cause:** ONE bug, both symptoms. `CommunitySunsSection` wrapped the AMBIENT full-page `SunsLayer` (position:absolute, z:-1, full-bleed) in `<Instrumented regionLabel="suns-board">` (delta S2). `regionRect()` resolves a display:contents wrapper to the UNION of its laid-out descendants → the entire 1440×9426 page, then clamps to the viewport = a full-viewport rect. That rect (a) rendered a green highlight ring spanning the whole viewport — right edge at 1440, far past the ~1208px content column, reading as "the share highlight extends right past the box" since it sits over the hero/share area — and (b) punched a full-viewport hole in the dim mask, leaving the scrim no area to paint → nothing dimmed. The fundraiser never instruments its ambient SunsLayer (its suns feature is highlighted via the bounded `sharer-board`); community is the only page that did.
+- **Fix:** drop the `Instrumented` wrapper from the ambient SunsLayer (now a bare fragment, mirroring fundraiser); remove the now-unused `overlay` prop + `OVERLAY_S2` const. The Suns-board S2 metric stays highlighted on the BOUNDED, visible `marks-intro` region (MarksIntroSection, delta S2, "X supporters — and counting" + legend + Leave-your-sun) — no feature highlight lost.
+- **Verified (windowless headless):** REPRO (pre-fix) — `suns-board` ring `right=1440 area=100%` (overshoot + full-viewport); sampled non-highlighted hero pixel luminance `off=255 → on=255` (zero dimming). POST-FIX — no ring exceeds the content edge (all `right≤1208`), no ring >70% viewport; sampled pixel measurably darker overlay-ON; screenshot shows balloon/nav/pill shaded while stats/follow/share/marks-intro pop. New E2E `12-community-overlay-dim.spec.ts` (ring-bounds + pixel-dim) 2/2. No regression: overlay clickthrough 06-cb09 11/11, 02-interactability 22/22 (suns-board refs there are count-guarded), unit 795/795. tsc clean.
+
+### CB-70 — Mobile: ribbon-collapse gap; donate bar should rise — DONE (resolved by mobile rework)
+- **Completed:** 2026-05-31 · bug · mobile (fundraiser) · **Files:** (no code change — resolved by CB-71/96 mobile reflow + the in-flow returning_banner slot)
+- **Verified (390px, iPhone 13, windowless):** the personalized orange `returning_banner` slot is in-flow directly above `.donatebar`. With the banner PRESENT (Priya) the donatebar sits at top=131; with it ABSENT (anonymous) the donatebar rises to top=64 — a clean reflow of exactly the banner height, NO residual gap. Both states screenshot-verified (cb70-priya / cb70-anon): ribbon-present and ribbon-absent both look intentional. Acceptance met.
+- **Note:** filed pre-CB-58; the old fixed-layout gap no longer exists under the reworked mobile layout. The transient GrewRibbon is `position:fixed` (occupies no layout space, can't gap).
+
+### CB-72 — Mobile: excessive trailing whitespace — DONE (resolved by mobile rework)
+- **Completed:** 2026-05-31 · bug · mobile · **Files:** (no code change — resolved by CB-71 reflow + fundraiser-layout.css mobile padding-bottom)
+- **Verified (390px, windowless):** fundraiser full-page `scrollHeight=4755`, bottom-most inked element bottom=4755 → `trailingGap=0`. Content ends cleanly; no dead vertical space. Acceptance met.
+
+### CB-73 — Fundraiser mobile: center "Edit my sun" button + text bunching — DONE (resolved by mobile rework)
+- **Completed:** 2026-05-31 · bug · mobile (fundraiser) · **Files:** (no code change — resolved by CB-71/85 mobile reflow)
+- **Verified (390px, windowless):** the "Leave your sun / Edit my sun" button measures x=48 w=294 → centerX=195 = exactly viewport/2 (390/2); button centered, text not bunched (full-page screenshot). Acceptance met.
+
+### CB-75 — Mobile: per-update share buttons clean truncation + smaller — DONE (resolved by CB-54/75 px-sizing)
+- **Completed:** 2026-05-31 · bug · mobile (fundraiser) · **Files:** components/fundraiser/UpdatesSection.tsx (carries the CB-75 px-sizing comment, lines ~170-173)
+- **Verified (390px, windowless):** the per-update share row (`[aria-label="Share this update"]`) is `flex gap-1 overflow-x-auto` with five explicit 36px circular buttons. Measured: list x=49..341 (w=292), buttons Facebook 49..85 … Copy-link 225..261 — all five fit, `scrollWidth==clientWidth` (no overflow, no half-cut button). Acceptance met. (An earlier probe's "clipped" hit was the ShareStudio's wide 233px buttons, a different component — not this row.)
