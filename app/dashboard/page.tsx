@@ -215,7 +215,11 @@ export default function DashboardPage() {
           borderBottom: '1px solid #e8e8e8',
           padding: '16px 24px',
           position: 'sticky',
-          top: 0,
+          // CB-106: stick BELOW the 56px sticky UnifiedNav (z:40), not at top:0. At top:0 both
+          // headers pinned to the same spot once the page scrolled (e.g. arriving via
+          // /dashboard#repeat-visits), so the nav's links covered this header's controls — the
+          // demo-data toggle/persona/date selects became unclickable ("button doesn't flip").
+          top: 56,
           zIndex: 30,
         }}
       >
