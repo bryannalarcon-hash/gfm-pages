@@ -19,6 +19,13 @@
  *   - This toggle sits TOP-RIGHT (below the unified nav) — a distinct corner.
  *   - data-overlay-ignore so the overlay measurement scan skips it.
  *
+ * CB-104:
+ *   - When the frame is open the parent OverlayPill stays visible (bottom-right,
+ *     outside the bezel). The iframe suppresses its own pill via isInMobileFrame().
+ *   - A funding slider (SunsDemoControl) is rendered in the parent chrome (bottom-left,
+ *     outside the bezel). It writes `demoFundedPct` to localStorage; the iframe's
+ *     FundraiserPage listens for `storage` events on that key and drives the goalbar/suns.
+ *
  * Hydration safety:
  *   - Frame state starts OFF on both SSR and the first client render → identical
  *     markup, no hydration mismatch. The toggle is pure client state thereafter.
@@ -26,9 +33,10 @@
  *     tree is byte-identical to the no-toggle baseline on first paint.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { isDemoMode } from '@/lib/personas/loader';
+import { SunsDemoControl } from '@/components/marks/SunsDemoControl';
 
 /**
  * CB-66: product routes where the mobile-view pill is allowed.
@@ -53,10 +61,39 @@ interface MobileFrameToggleProps {
   children: React.ReactNode;
 }
 
+// CB-104: localStorage key for the cross-document funding demo percentage.
+// Kept in a constant so MobileFrameToggle (writer) and FundraiserPage (reader) share it.
+export const DEMO_FUNDED_PCT_KEY = 'demoFundedPct';
+
 export function MobileFrameToggle({ children }: MobileFrameToggleProps): JSX.Element {
   // Starts OFF on SSR + first client render → no hydration mismatch.
   const [frameOn, setFrameOn] = useState(false);
   const pathname = usePathname();
+
+  // CB-104: funding slider state for the parent-chrome control (outside the bezel).
+  // Starts null (unset = iframe uses its own seed value). Writing to localStorage triggers
+  // a 'storage' event in the iframe's FundraiserPage which then drives goalbar/suns/Priya%.
+  const [parentFundedPct, setParentFundedPct] = useState<number | null>(null);
+
+  // CB-104: sync funding percentage to localStorage whenever parent slider changes.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (parentFundedPct === null) return;
+    try {
+      window.localStorage.setItem(DEMO_FUNDED_PCT_KEY, String(parentFundedPct));
+    } catch {
+      // localStorage unavailable (private browsing, quota) — fail silently.
+    }
+  }, [parentFundedPct]);
+
+  // CB-100 → CB-104: the body class is still toggled (future-proof) but the CSS rule that
+  // hid the parent pill was removed — the pill now stays visible outside the bezel.
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const on = frameOn && isProductRoute(pathname);
+    document.body.classList.toggle('mobile-frame-open', on);
+    return () => document.body.classList.remove('mobile-frame-open');
+  }, [frameOn, pathname]);
 
   // CB-94/CB-95: the mobile-frame toggle exists to PREVIEW the mobile frame on a DESKTOP
   // viewport — it's redundant on an already-narrow screen, and at the top-right it overlaps
@@ -173,6 +210,24 @@ export function MobileFrameToggle({ children }: MobileFrameToggleProps): JSX.Ele
                 borderRadius: 40,
                 background: 'var(--hrt-color-surface-default, #fff)',
               }}
+            />
+          </div>
+
+          {/* CB-104: funding slider in the PARENT chrome, outside the phone bezel.
+              Writes demoFundedPct to localStorage → the iframe's FundraiserPage listens
+              via window 'storage' events and drives its goalbar/suns/Priya-banner live.
+              The OverlayPill (bottom-right) stays visible in the parent document because
+              the CB-100 CSS suppression rule was removed (globals.css). The SunsDemoControl
+              is positioned fixed (bottom-left) via its own styles — it renders at z-index:950
+              so it floats above the backdrop (900) but below the toggle (1000). */}
+          <div
+            data-mobile-frame-slider=""
+            data-overlay-ignore="true"
+            style={{ position: 'fixed', bottom: 0, left: 0, zIndex: 950, pointerEvents: 'none' }}
+          >
+            <SunsDemoControl
+              value={parentFundedPct ?? 0.5}
+              onChange={(pct) => setParentFundedPct(pct)}
             />
           </div>
         </div>

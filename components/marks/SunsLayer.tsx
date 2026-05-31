@@ -45,6 +45,7 @@ import { SUN_GRADIENTS } from '@/lib/marks/types';
 import { packSuns } from '@/lib/marks/engine';
 import { logoMaskStyle } from '@/lib/marks/logoMask';
 import { SunsDemoControl } from '@/components/marks/SunsDemoControl';
+import { isInMobileFrame } from '@/lib/mobileFrame';
 
 // Fixed gutter geometry constants — derived from the known layout breakpoints.
 // The content column is max-w-[680px] centered. At 1280px viewport the gutters
@@ -357,6 +358,12 @@ export function SunsLayer({
     ensureFallAnim();
   }
 
+  // CB-104: detect if we are running inside the CB-96 mobile-preview iframe.
+  // Starts false (SSR + first client render) so SSR output is identical to the client's
+  // first render → no hydration mismatch. Updated after mount via useEffect.
+  const [inFrame, setInFrame] = useState(false);
+  useEffect(() => { setInFrame(isInMobileFrame()); }, []);
+
   // CB-14: self-protecting reduced-motion guard. The layer honours the `reducedMotion` prop
   // AND independently re-checks `prefers-reduced-motion: reduce` after mount, so suns are
   // static even if a caller passes the prop late/incorrectly. SSR-safe: starts false (no
@@ -562,8 +569,9 @@ export function SunsLayer({
         <div aria-hidden="true" style={layerStyle}>
           {mobileMarks}
         </div>
-        {/* CB-30: demo control — outside aria-hidden, bottom-left (avoids overlay pill at bottom-right) */}
-        <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />
+        {/* CB-30/CB-104: demo control — outside aria-hidden, bottom-left. Hidden when running
+            inside the CB-96 mobile-preview iframe (parent chrome hosts the slider instead). */}
+        {!inFrame && <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />}
       </>
     );
   }
@@ -692,8 +700,9 @@ export function SunsLayer({
             Be the first to light this up
           </div>
         </div>
-        {/* CB-30: demo control — outside aria-hidden, bottom-left (avoids overlay pill at bottom-right) */}
-        <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />
+        {/* CB-30/CB-104: demo control — outside aria-hidden, bottom-left. Hidden when running
+            inside the CB-96 mobile-preview iframe (parent chrome hosts the slider instead). */}
+        {!inFrame && <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />}
       </>
     );
   }
@@ -766,9 +775,10 @@ export function SunsLayer({
           ))}
         </div>
       </div>
-      {/* CB-30: demo control — outside aria-hidden, bottom-left (avoids overlay pill at bottom-right).
+      {/* CB-30/CB-104: demo control — outside aria-hidden, bottom-left. Hidden when running
+          inside the CB-96 mobile-preview iframe (parent chrome hosts the slider instead).
           Renders null when NEXT_PUBLIC_DEMO_MODE !== 'true'. */}
-      <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />
+      {!inFrame && <SunsDemoControl value={effectiveFundedPct} onChange={setDemoFundedPct} />}
     </>
   );
 }

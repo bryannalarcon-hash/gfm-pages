@@ -60,3 +60,8 @@ a {
 @media (max-width: 700px) {
   [data-mobile-frame-toggle] { display: none !important; }
 }
+
+/* CB-100 → CB-104: the OUTER persona/overlay pill is now KEPT VISIBLE when the mobile preview
+   frame is open — it lives outside the phone bezel in the parent chrome and syncs to the iframe
+   via localStorage storage events. The iframe's own pill is suppressed by the isInMobileFrame()
+   guard in OverlayPill.tsx (no duplication). The old display:none rule is intentionally removed. */

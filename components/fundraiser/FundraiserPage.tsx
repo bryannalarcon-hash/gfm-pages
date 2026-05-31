@@ -19,6 +19,8 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import './fundraiser-layout.css';
 import { usePersona } from '@/lib/overlay/context';
+import { isInMobileFrame } from '@/lib/mobileFrame';
+import { DEMO_FUNDED_PCT_KEY } from '@/components/shared/MobileFrameToggle';
 import { SHARE_COPY_MATRIX } from '@/fixtures/shareCopyMatrix';
 import { RIPPLE_STATS } from '@/fixtures/rippleStats';
 import { PersonalizedSlot } from '@/components/slots/PersonalizedSlot';
@@ -411,9 +413,45 @@ export function FundraiserPage({
   // CB-93: the suns demo funding control (lifted out of SunsLayer) drives BOTH the gutter suns
   // AND the on-page progress bar/labels from one source. null → SSR uses the real seed pct (no
   // hydration mismatch); after the user drags, the bar fill + "$ raised / % of goal" track it.
+  //
+  // CB-104: when running inside the mobile-preview iframe the parent-chrome slider drives this
+  // value via localStorage. We initialize from localStorage on mount (if available) and listen
+  // for 'storage' events so the iframe stays in sync with the parent slider in real-time.
+  // On the non-framed page the localStorage key is ignored — behaviour is unchanged.
   const [demoFundedPct, setDemoFundedPct] = useState<number | null>(null);
+  useEffect(() => {
+    if (!isInMobileFrame()) return;
+    // Initialize from localStorage on first mount (parent may have set a value already).
+    try {
+      const stored = window.localStorage.getItem(DEMO_FUNDED_PCT_KEY);
+      if (stored !== null) {
+        const v = parseFloat(stored);
+        if (!isNaN(v)) setDemoFundedPct(Math.max(0, Math.min(1, v)));
+      }
+    } catch {
+      // localStorage unavailable — ignore.
+    }
+    // Listen for subsequent changes driven by the parent-chrome slider.
+    function onStorage(e: StorageEvent) {
+      if (e.key !== DEMO_FUNDED_PCT_KEY) return;
+      const raw = e.newValue;
+      if (raw === null) { setDemoFundedPct(null); return; }
+      const v = parseFloat(raw);
+      if (!isNaN(v)) setDemoFundedPct(Math.max(0, Math.min(1, v)));
+    }
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
   const displayPct = demoFundedPct ?? pct;
   const displayRaised = demoFundedPct != null ? Math.round(demoFundedPct * fundraiser.goal_usd) : fundraiser.raised_usd;
+
+  // CB-101: feed the live demo funded% into the L3.5 slots that show a funded figure (e.g.
+  // Priya's returning banner "…X% funded…") so they update WITH the demo:funding% slider,
+  // not just the goalbar/suns. null override → the SSR page is used unchanged (no drift).
+  const pageWithLivePct = useMemo<PageContext>(
+    () => (demoFundedPct == null ? page : { ...page, pageState: { ...page.pageState, raisedPct: demoFundedPct } }),
+    [page, demoFundedPct],
+  );
 
   return (
     <div className="relative min-h-screen">
@@ -424,7 +462,7 @@ export function FundraiserPage({
 
       {/* D8/D13 returning banner slot (L3.5 — never unmounts) */}
       <Instrumented attrs={BANNER_OVERLAY} regionLabel="returning-banner">
-        <PersonalizedSlot name="returning_banner" page={page} candidates={candidates}
+        <PersonalizedSlot name="returning_banner" page={pageWithLivePct} candidates={candidates}
           overlay={BANNER_OVERLAY} sectionName="returning_banner" />
       </Instrumented>
 
@@ -725,6 +763,7 @@ export function FundraiserPage({
               page={page} candidates={candidates} fundraiserId={fundraiser.id}
               organizerName={fundraiser.organizer_name} goalUsd={fundraiser.goal_usd}
               openInMonthly={openInMonthly} onCompleted={handleDonateCompleted}
+              onClose={handleCloseSheet}
             />
           </div>
         </aside>
