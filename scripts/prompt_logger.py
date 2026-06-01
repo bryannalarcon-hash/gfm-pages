@@ -40,7 +40,7 @@ PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 #                                         the current panes; add a row when a pane restarts
 #                                         with a new session id.
 #   3. DEFAULT_LOG (coder)             → fallback for an unrecognized session.
-DEFAULT_LOG = os.path.join(PROJECT_DIR, "claude-coder-conversation.md")
+DEFAULT_LOG = os.path.join(PROJECT_DIR, "ai-logging", "claude-coder-conversation.md")
 ROUTE_FILE = os.path.join(PROJECT_DIR, ".claude", "log-route.json")
 
 

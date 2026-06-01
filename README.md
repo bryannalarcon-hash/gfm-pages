@@ -1,13 +1,15 @@
 # GoFundMe — Profile · Fundraiser · Community (reimagined)
 
 A share-first redesign of GoFundMe's three core pages, tied together into one engaging,
-return-worthy experience. Built for the "Gold" assignment ([`assignment_description.md`](./assignment_description.md)).
+return-worthy experience. Built for GoFundMe's "Gold" build assignment.
 
-**Live demo:** https://gfm-web-production.up.railway.app
+**🚀 Live deployment:** https://gfm-web-production.up.railway.app
 &nbsp;·&nbsp; Fundraiser [`/f/realtime-alerts-for-wildfire-safety-r5jkk`](https://gfm-web-production.up.railway.app/f/realtime-alerts-for-wildfire-safety-r5jkk)
 &nbsp;·&nbsp; Community [`/communities/watch-duty`](https://gfm-web-production.up.railway.app/communities/watch-duty)
 &nbsp;·&nbsp; Profile [`/u/janahan`](https://gfm-web-production.up.railway.app/u/janahan)
 &nbsp;·&nbsp; Dashboard [`/dashboard`](https://gfm-web-production.up.railway.app/dashboard)
+
+**🎬 Demo video:** _link coming — will be added here once recorded._ <!-- DEMO_VIDEO_URL: replace this line with the video link when provided -->
 
 > Demo mode is on (`NEXT_PUBLIC_DEMO_MODE=true`): a metric-overlay toggle, persona switcher, and
 > funding slider let you explore the instrumentation and personalization live.
@@ -95,7 +97,7 @@ Because `NEXT_PUBLIC_*` is inlined at build time, those vars must exist before t
 
 TDD/regression discipline: a failing test first, then the fix. Suites: ~Vitest unit + integration
 (PGlite-backed) and Playwright E2E across desktop + 390px mobile + axe. The bar for "done" is the
-**rendered** behavior matching the v4.2 mocks (`mocks/`), not just a green suite. See `test-plan.md`.
+**rendered** behavior matching the v4.2 design mocks, not just a green suite. See `test-plan.md`.
 
 ## Repository layout
 
@@ -106,7 +108,6 @@ lib/           marks/ personalization/ personas/ overlay/ db/ analytics/ ticker/
 db/            migrations + seed + setup
 fixtures/      personas, share-copy matrices, ripple stats, sessions
 docs/          architecture, design specs, strategy, change board, test plan (27 docs)
-mocks/         v4.2 hi-fi HTML mocks + mobile reference
 tests/         unit/ integration/ e2e/
 ```
 

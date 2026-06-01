@@ -3,10 +3,13 @@
 .env.*
 !.env.example
 
-# Conversation logs (planner auto-captured by scripts/prompt_logger.py; designer/coder added by hand)
-claude-*-conversation.md
-claude-*-conversation.md.bak*
+# AI conversation logs — local per-machine history, kept under ai-logging/ (not for the repo)
+ai-logging/
 *.bak-*
+
+# Assignment spec + design mocks — local reference only, not redistributed in the repo
+assignment_description.md
+mocks/
 
 # Handoff docs (context-management; per-machine, not for the repo)
 handoff/
