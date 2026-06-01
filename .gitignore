@@ -11,6 +11,9 @@ ai-logging/
 assignment_description.md
 mocks/
 
+# Demo recording aid — local prep, not repo content
+DEMO_SCRIPT.md
+
 # Handoff docs (context-management; per-machine, not for the repo)
 handoff/
 design_handoff_1/

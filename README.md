@@ -9,7 +9,7 @@ return-worthy experience. Built for GoFundMe's "Gold" build assignment.
 &nbsp;·&nbsp; Profile [`/u/janahan`](https://gfm-web-production.up.railway.app/u/janahan)
 &nbsp;·&nbsp; Dashboard [`/dashboard`](https://gfm-web-production.up.railway.app/dashboard)
 
-**🎬 Demo video:** _link coming — will be added here once recorded._ <!-- DEMO_VIDEO_URL: replace this line with the video link when provided -->
+**🎬 Demo video:** https://youtu.be/Vab6zIMaz1M
 
 > Demo mode is on (`NEXT_PUBLIC_DEMO_MODE=true`): a metric-overlay toggle, persona switcher, and
 > funding slider let you explore the instrumentation and personalization live.
